@@ -1,0 +1,29 @@
+{extends '@account.latte'}
+
+{block #contentAccount}
+
+{define #javascritpBottom}
+{include '../@baseaccount.js.latte'}
+{/define}
+
+{form setupForm class=>'formShiftpattern'}
+	<div class="formRowNolabel">
+		{label sysPatternSelect /} {input sysPatternSelect}
+	</div>
+	{if $form['patternInput']->errors}
+	<div class="formRowError">
+		<ul>
+			<li n:foreach="$form['patternInput']->errors as $error">{$error}</li>
+		</ul>
+		{input patternInput}
+
+	</div>
+	{else}
+	<div class="formRowNolabel">		
+		{input patternInput}
+	</div>
+	{/if}
+	<div class="formLine buttonArea">
+	{input send}
+	</div>
+{/form}

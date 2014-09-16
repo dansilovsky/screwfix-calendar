@@ -1,0 +1,47 @@
+a {	
+	&, &:visited, &:hover {
+		color: inherit;
+		text-decoration: none;
+	}
+}
+
+/*html {
+	font-family: "Segoe UI", "Segoe UI Web Regular", "Segoe UI Symbol", "Helvetica Neue", "BBAlpha Sans", "S60 Sans", Arial, "sans-serif";
+}*/
+
+body {
+	min-width: 987px;
+}
+
+/*h1.bar {
+	font-size: 1.42857em  20/14 ;
+	line-height: $line-height-h1;
+	height: $line-height * 4;
+}*/
+
+/*.highlight {
+	background-color: $color-highlight;
+	color: $color-text-dark-highlight;
+}*/
+/*.layover {
+	@include opacity(0.5);
+	background-color: black;
+	height: 100%;
+	left: 0;
+	position: fixed;
+	top: 0;
+	width: 100%;
+}*/
+.popupBox {
+	background-color: #fff;
+	border: 2px solid #000;
+	padding: $padding-main;
+	position: fixed;	
+}
+/*.alert {	
+	background-color: #fff;
+	border: 2px solid #000;
+	line-height: $line-height-normal;
+	padding: $padding-main;
+	position: fixed;
+}*/

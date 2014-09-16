@@ -1,0 +1,31 @@
+<table id="{$id}" class="inputPattern" n:if="$pattern">
+	<input type="hidden" name="{$name}" value="{$input}">
+	<tr><th></th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Sunday</th></tr>
+{foreach $pattern as $weekNum => $week}
+	<tr>
+		<td>
+			<div>{$weekNum + 1}</div>
+		</td>
+	{foreach $week as $dayNum => $times}		
+		<td>
+			{if $times}
+				<div class="date">{$date|day}</div>
+				<div class="time">
+					{$times[0]} - {$times[1]}
+				</div>				
+			{else}
+			<div class="date">{$date|day}</div>
+			<div class="time">
+				Off day
+			</div>
+			{/if}
+		</td>
+	{/foreach}
+	</tr>
+	{/foreach}
+	<tr>
+		<td colspan="8">
+			<input type="button" class="button" name="customize" value="Customize">
+		</td>
+	</tr>
+</table>

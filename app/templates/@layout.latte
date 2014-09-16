@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en-GB" >
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="description" content="">
+		<title>Screwfix calendar{block title|striptags|upper}{/block}</title>
+		<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}{include #cssPath}">
+		<link rel="shortcut icon" href="{$basePath}/common/favicon.ico">
+	</head>
+
+	<body>
+		{if $isStickyFooter}
+		<div id="root">
+		{/if}
+			<div id="mainBar" class="highlight">
+				<nav>
+					<ul>
+						<li class="logo"><a n:href=":Front:Home:">SCREWFIX CALENDAR</a></li>
+						<li n:if="$user->isInRole('editor') || $user->isInRole('admin')"><a n:href=":Admin:Admin:">Administration</a></li>
+					</ul>
+				</nav>
+				{block authentication}
+				<div class="authentication">
+					{if $user->isLoggedIn()}
+					<a n:href="signOut!">Sign out</a>
+					<b>{$user->getIdentity()->username}</b>
+					{else}
+					<span><a n:href=":Front:Signin:">Sign in</a> | <a n:href=":Front:Signup:">Sign Up</a></span>
+					{/if}
+				</div>
+				{/block}
+			</div>
+			<div id="contentMain">
+			{include #content}
+			</div>
+		{if $isStickyFooter}
+			<div id="root_footer"></div>
+		</div>
+		{/if}
+		<div id="footer">
+			&copy; 2013 Daniel Silovsky
+		</div>
+		<script type="text/javascript" src="{$basePath}/js/jquery.js"></script>
+		<script type="text/template" id="commonAlert">
+			<div><%= data.title%></div>
+			<div><%= data.text%></div>
+			<button>Ok</button>
+		</script>
+		{ifset #javascritpBottom}{include #javascritpBottom}{/ifset}		
+	</body>
+</html>	

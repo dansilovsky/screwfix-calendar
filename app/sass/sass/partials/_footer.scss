@@ -1,0 +1,6 @@
+#footer {
+	clear: left;
+	height: px-to-em($bar-height, $base-font-size);
+	line-height: px-to-em($bar-height, $base-font-size);
+	padding: 0 px-to-em($padding-main, $base-font-size);
+}

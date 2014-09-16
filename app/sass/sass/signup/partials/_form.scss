@@ -1,0 +1,10 @@
+@include form-general;
+@include form-textfield-width($width-form-general);
+
+#formCredentials {
+	width: px-to-em($width-form-general, $base-font-size);
+}
+
+#formPattern {
+	width: px-to-em($width-screen-pc-min, $base-font-size);
+}

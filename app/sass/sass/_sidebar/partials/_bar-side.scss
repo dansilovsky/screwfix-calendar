@@ -1,0 +1,41 @@
+@import "compass/layout/stretching";
+
+.barSide {
+	background: $color-grey-light;
+	padding: px-to-em($padding-content-h, $base-font-size) 0;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: px-to-em(180px, $base-font-size);
+	
+	h1 {
+		font-size: $font-size-big;
+		height: px-to-em($line-height-big, $font-size-big);
+		line-height: px-to-em($line-height-big, $font-size-big);
+		margin-bottom: 0;
+		padding: 0 px-to-em($padding-main, $font-size-big);
+	}
+	
+	.current {
+		background-color: $color-grey-darker;
+		&:hover {
+			@include lighten-background($color-grey-darker);
+		}
+	}
+	
+	a {
+		display: block;
+		height: px-to-em($line-height-big, $base-font-size);
+		line-height: px-to-em($line-height-big, $base-font-size);
+		
+		padding: 0 px-to-em($padding-main, $base-font-size);
+		
+		&:hover {
+			@include darken-background($color-grey-light);
+		}
+	}
+}
+
+
+
+

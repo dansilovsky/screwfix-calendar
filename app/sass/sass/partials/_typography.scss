@@ -1,0 +1,18 @@
+/* 
+    Created on : 08-May-2014, 11:17:21
+    Author     : Daniel Silovsky
+*/
+@import "../modules/_typography.scss";
+
+html {
+	font-family: "Segoe UI", "Segoe UI Web Regular", "Segoe UI Symbol", "Helvetica Neue", "BBAlpha Sans", "S60 Sans", Arial, "sans-serif";
+	color: $color-text-background-light;
+}
+
+h1 {
+	font-size: px-to-em($font-size-big, $base-font-size);
+	height: px-to-em($base-line-height, $font-size-big);
+	line-height: px-to-em($base-line-height, $font-size-big);
+	margin-bottom: px-to-em($base-line-height, $font-size-big);
+}
+

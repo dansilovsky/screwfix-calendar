@@ -1,0 +1,238 @@
+{extends '@layout.latte'}
+{block #content}
+<div id="calendar">
+	
+</div>
+
+{/block}
+
+{define #cssPath}
+/css/calendar.css
+{/define}
+
+{define #javascritpBottom}
+<script type="text/template" id="calendarNavigatorTemplate">
+	<a id="prevMonth" href="javascript:;"> &lt; </a> <a id="nextMonth" href="javascript:;"> &gt; </a> <span id="dateLabel"><%- mo.monthName %> <%- mo.year %></span>
+</script>
+
+<script type="text/template" id="calendarToolsTemplate">
+	<a href="javascript:;" title="Add or remove notes" id="mode:notes" class="on">Notes</a>
+	<a href="javascript:;" title="Add holidays or cancel any holidays" id="mode:holidays">Holidays</a>
+	<a href="javascript:;" title="Add halfday holidays or cancel any holidays" id="mode:halfdayHolidays">Halfday holidays</a>
+</script>
+
+<script type="text/template" id="dayTemplate">
+	<div class="cell<% if (mo.view.isToday()) { %> today<%}%><% if (mo.view.isEdge()) { %> edge<%}%>">
+		<div class="cellBar day"><%- mo.data.day %><a href="javascript:;" class="lessMoreLink"></a></div>
+		<% if (mo.data.note !== null) { %>				
+			<% _.each(mo.data.note, function(item) { %> 
+				<div class="cellBar note highlight">	
+					<%- item.note %>
+				</div>
+			<% }); %>	
+		<% } %>
+		<% if (mo.data.sysNote !== null) { %>				
+			<% _.each(mo.data.sysNote, function(item) { %> 
+				<div class="cellBar sysNote highlight">	
+					<%- item.note %>
+				</div>
+			<% }); %>	
+		<% } %>
+		<div class="cellBar work">
+			<% if (mo.data.bankHoliday !== null) { %>
+				:) <%- mo.data.bankHoliday %>	
+			<% } else if (mo.data.holiday === 0) { %>
+				:) Holiday
+			<% } else if (mo.data.holiday === 1) { %>
+				:) Halfday holiday
+			<% } else if (mo.data.shiftStart !== null) { %>
+				<%- mo.data.shiftStart + ' - ' + mo.data.shiftEnd %>
+			<% } else { %>
+				:)	
+			<% } %>
+		</div>
+		<div class="selected"></div>
+	</div>	
+</script>
+
+<script type="text/template" id="monthTemplate">
+	<table id="calendarHeaderTable">
+		<tr>
+			<th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Sunday</th>
+		</tr>
+	</table>
+	<table id="calendarMainTable"></table>
+</script>
+
+<script type="text/template" id="calendarTemplate">
+	<div id="calendarBar"></div>
+</script>
+
+<script type="text/template" id="holidaysSelectionInfoTemplate">
+	<div>
+		<% if (data === null) { %> Can not be added <% } else { %>
+			<% if (data.isSplit && data.extra.position === 'before') { %>
+			<div>holiday year <%= data.extra.year %></div>
+			<div>Selected: <%= data.extra.add.count %></div>
+			<div>Holidays left: <%= data.extra.available %></div>
+			<% } %>		
+			<div>holiday year <%= data.main.year %></div>
+			<div>Selected: <%= data.main.add.count %></div>
+			<div>Holidays left: <%= data.main.available %></div>
+			<% if (data.isSplit && data.extra.position === 'after') { %>		
+			<div>holiday year <%= data.extra.year %></div>
+			<div>Selected: <%= data.extra.add.count %></div>
+			<div>Holidays left: <%= data.extra.available %></div>
+			<% } %>
+		<% } %>
+	</div>
+</script>
+
+<script type="text/template" id="addNoteTemplate">
+	<form action="#">
+		<% if (data.showSwitcher) { %>
+		<div class="switcher">
+			<a href="javascript:;" id="personal" class="on">Personal</a><a href="javascript:;" id="system">System</a>
+		</div>
+		<% } %>
+		<div class="formRowLabelTop">
+			<label>When: <%= data.when%></label>
+			<textarea name="note" maxlength="500" cols="25" rows="5" />
+		</div>
+		<div class="buttonArea">
+			<button name="save" class="button" type="button">Save</button>
+		</div>
+	</form>
+</script>
+
+<script type="text/template" id="editNoteTemplate">
+	<form action="#">
+		<div class="formRowLabelTop">
+			<label>When: <%= data.when%></label>		
+			<textarea name="note" maxlength="500" cols="25" rows="5"><%- data.val %></textarea>
+		</div>
+		<div class="buttonArea">
+			<button name="save" class="button" type="button">Save</button>
+			<button name="delete" class="button buttonNegative" type="button">Delete</button>
+
+		</div>
+	</form>
+</script>
+
+<script type="text/template" id="addHolidaysFormTemplate">
+	<% if (data.tIsExtraAddAction && data.extra.position == 'before') { %>
+		<div>Holidays year <%- data.tHolidaysYear(data.extra.from, data.extra.to) %></div>
+		<div>From <%= data.extra.add.first.toString() %> To <%= data.extra.add.last.toString() %></div>
+		<div>Number of days taken: <%- data.extra.add.count %></div>
+	<% } %>
+
+	<%if (data.tIsMainAddAction) { %>
+		<% if (data.isSplit) { %>
+		<div>Holidays year <%- data.tHolidaysYear(data.main.from, data.main.to) %></div>
+		<% } %>
+		<div>From <%= data.main.add.first.toString() %> To <%= data.main.add.last.toString() %></div>
+		<div>Number of days taken: <%- data.main.add.count %></div>
+	<% } %>
+	
+	<% if (data.tIsExtraAddAction && data.extra.position == 'after') { %>
+		<div>Holidays year <%- data.tHolidaysYear(data.extra.from, data.extra.to) %></div>
+		<div>From <%= data.extra.add.first.toString() %> To <%= data.extra.add.last.toString() %></div>
+		<div>Number of days taken: <%- data.extra.add.count %></div>
+	<% } %>
+	<div class="buttonArea">
+		<button name="addOrCancel" class="button" type="button">Add <% if (data.mode === 'halfdayHolidays') { %>halfday<% } %> holidays</button>
+	</div>
+</script>
+
+<script type="text/template" id="cancelHolidaysFormTemplate">
+	<% if (data.extra && data.extra.position == 'before' && data.extra.cancel.count > 0) { %>
+		<div>Holidays year <%- data.tHolidaysYear(data.extra.from, data.extra.to) %></div>
+		<div>From <%= data.extra.cancel.first.toString() %> To <%= data.extra.cancel.last.toString() %></div>
+		<div>Number of days cancelled: <%- data.extra.cancel.count %></div>
+	<% } %>
+
+	<%if (data.main.cancel.count > 0) { %>
+		<% if (data.isSplit) { %>
+		<div>Holidays year <%- data.tHolidaysYear(data.main.from, data.main.to) %></div>
+		<% } %>
+		<div>From <%= data.main.cancel.first.toString() %> To <%= data.main.cancel.last.toString() %></div>
+		<div>Number of days cancelled: <%- data.main.cancel.count %></div>
+	<% } %>
+
+	<% if (data.extra && data.extra.position == 'after' && data.extra.cancel.count > 0) { %>
+		<div>Holidays year <%- data.tHolidaysYear(data.extra.from, data.extra.to) %></div>
+		<div>From <%= data.extra.cancel.first.toString() %> To <%= data.extra.cancel.last.toString() %></div>
+		<div>Number of days cancelled: <%- data.extra.cancel.count %></div>
+	<% } %>
+	<div class="buttonArea">
+		<button name="addOrCancel" class="button" type="button">Cancel holidays</button>
+	</div>
+</script>
+
+<script type="text/javascript" src="{$basePath}/js/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="{$basePath}/js/underscore-dev-1.6.0.js"></script>
+<script type="text/javascript" src="{$basePath}/js/backbone-dev-1.1.2.js"></script>
+<script type="text/javascript" src="{$basePath}/js/zidane.js"></script>
+<script type="text/javascript">
+	var Screwfix = {
+		today: {
+			year: {$calendarToday['year']},
+			month: {$calendarToday['month']},
+			monthName: {$calendarToday['monthName']},
+			day: {$calendarToday['day']}
+		},
+		acl: {
+			roles: {$acl->getRoles()}
+		},		
+		user: {
+			{var roles = $user->getRoles()}
+			role: {$roles[0]}
+		},
+		dimensions: {
+			// sum of heights of elements that never change height when window is resized (main bar + calendar bar + calaendar header table bar + footer)
+			fixedHeight: 150,
+			// height of a cell bar inside a day cell (eg. note bar, work bar, ...)
+			cellBarHeight: 30,
+		},
+		// TODO: zajisti aby se tato informace tahala z db ne pouze staticky z sablony
+		holidays: {
+			years: []
+		},		
+		calendarDaysData: [
+		{foreach $calendarData as $day}
+			{
+				id: {$day->id()}, 
+				day: {$day->day()}, 
+				note: {$day->note()},
+				sysNote: {$day->sysNote()},
+				holiday: {$day->holiday()},
+				bankHoliday: {$day->bankHoliday()},
+				shiftStart: {$day->shiftStart()},
+				shiftEnd: {$day->shiftEnd()},
+				year: {$day->year()},
+				displayMonth: {$day->displayMonth()},
+				isFirstDayOfWeek: {$day->isFirstDayOfWeek()},
+				isLastDayOfWeek: {$day->isLastDayOfWeek()},
+			}{sep},{/sep}
+		{/foreach}
+		]
+	};	
+	Screwfix.holidays.years[2013] = { credits: 33, debits: 33, from: '2013-04-01', to: '2014-03-31'};
+	Screwfix.holidays.years[2014] = { credits: 33, debits: 0, from: '2014-04-01', to: '2015-03-31'};
+	Screwfix.holidays.years[2015] = { credits: 33, debits: 0, from: '2015-04-01', to: '2016-03-31'};
+</script>
+<script type="text/javascript" src="{$basePath}/js/common.js"></script>
+<script type="text/javascript" src="{$basePath}/js/calendar.js"></script>
+
+{/define}
+
+
+
+
+
+
+
+
+
+
+	

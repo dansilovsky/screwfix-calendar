@@ -1,0 +1,96 @@
+{extends '../../../templates/@layout.latte'}
+
+{define #cssPath}
+/css/signup.css
+{/define}
+
+{define #javascritpBottom}
+{include '../@baseaccount.js.latte'}
+{/define}
+
+{block content}
+<div id="contentSignup">
+	<h1>Sign up</h1>
+	{form signupForm}
+		<div n:if="$form->ownErrors" class="formRowCommonError">
+			<ul>
+				<li n:foreach="$form->ownErrors as $error">{$error}</li>
+			</ul>
+		</div>
+		<div id="formCredentials">
+			{if $form['username']->errors}
+			<div class="formRowError">
+				<ul>
+					<li n:foreach="$form['username']->errors as $error">{$error}</li>
+				</ul>
+				{input username}
+			</div>
+			{else}
+			<div class="formRowNolabel">
+				{input username}
+			</div>
+			{/if}
+			{if $form['email']->errors}
+			<div class="formRowError">
+				<ul>
+					<li n:foreach="$form['email']->errors as $error">{$error}</li>
+				</ul>
+				{label email /}
+				{input email}
+
+			</div>
+			{else}
+			<div class="formRowNolabel">
+				{label email /}
+				{input email}
+			</div>
+			{/if}
+			{if $form['password']->errors}
+			<div class="formRowError">
+				<ul>
+					<li n:foreach="$form['password']->errors as $error">{$error}</li>
+				</ul>
+				{input password}
+
+			</div>
+			{else}
+			<div class="formRowNolabel">
+				{input password}
+			</div>
+			{/if}
+			{if $form['verifyPassword']->errors}
+			<div class="formRowError">
+				<ul>
+					<li n:foreach="$form['verifyPassword']->errors as $error">{$error}</li>
+				</ul>
+				{input verifyPassword}
+
+			</div>
+			{else}
+			<div class="formRowNolabel">
+				{input verifyPassword}
+			</div>
+			{/if}
+		</div>
+		<div id="formPattern">
+			<div class="formRowNolabel">
+				{label sysPatternSelect /} {input sysPatternSelect}
+			</div>
+			{if $form['patternInput']->errors}
+			<div class="formRowError">
+				<ul>
+					<li n:foreach="$form['patternInput']->errors as $error">{$error}</li>
+				</ul>
+				{input patternInput}
+			</div>
+			{else}
+			<div class="formRowNolabel">
+				{input patternInput}
+			</div>
+			{/if}
+			<div class="formLine buttonArea">
+			{input createAccount}
+			</div>
+		</div>
+	{/form}
+</div>
