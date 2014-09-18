@@ -76,7 +76,7 @@ class DaysPresenter extends BasePresenter {
 //		$this->response->setCode(\Nette\Http\Response::S400_BAD_REQUEST);
 		
 		$data = $this->getJson();
-
+		
 		if ($day_id !== null)
 		{
 			// update notes or sys notes
@@ -141,7 +141,7 @@ class DaysPresenter extends BasePresenter {
 					if (!($holiday['id'] >= $holidayYearBoudaries['from'] && $holiday['id'] <= $holidayYearBoudaries['to']))
 					{
 						$failed = true;
-						$errorMessage = 'Attempt to save holidays from different holiday years';
+						$errorMessage = 'Attempt to save holidays from different holiday years.';
 						break;
 					}
 				}
@@ -158,7 +158,7 @@ class DaysPresenter extends BasePresenter {
 				if ($totalCredits - $debits - $countNewDebits < 0)
 				{					
 					$failed = true;
-					$errorMessage = 'Too many holidays';
+					$errorMessage = 'Too many holidays.';
 				}
 			}
 			
