@@ -20,6 +20,9 @@ abstract class BasePresenter extends \Screwfix\CalendarPresenter implements ApiP
 		$this->readJsonData();
 	}
 	
+	/**
+	 * Read json data sent by client.
+	 */
 	private function readJsonData() {
 		$jsonData = file_get_contents('php://input');
 		
@@ -27,7 +30,7 @@ abstract class BasePresenter extends \Screwfix\CalendarPresenter implements ApiP
 	}
 	
 	/**
-	 * Get decoded json
+	 * Get decoded json sent by client
 	 * @return array|null Returns the value encoded in json in appropriate PHP array. NULL is returned if the json cannot be decoded.
 	 */
 	public function getJson() {
