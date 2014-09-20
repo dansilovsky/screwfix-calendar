@@ -21,12 +21,23 @@ abstract class BasePresenter extends \Screwfix\CalendarPresenter implements ApiP
 	}
 	
 	/**
+	 * Use only for testing purposes.
+	 */
+	public function setTestJsonData(array $data)
+	{
+		$this->_jsonData = $data;
+	}
+	
+	/**
 	 * Read json data sent by client.
 	 */
 	private function readJsonData() {
-		$jsonData = file_get_contents('php://input');
-		
-		$this->_jsonData = Json::decode($jsonData, Json::FORCE_ARRAY);
+		if ($this->request->getHeader('Content-Type') === 'application/json')
+		{
+			$jsonData = file_get_contents('php://input');
+
+			$this->_jsonData = Json::decode($jsonData, Json::FORCE_ARRAY);
+		}
 	}
 	
 	/**
