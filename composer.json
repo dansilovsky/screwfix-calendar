@@ -20,7 +20,9 @@
 		"dg/adminer-custom": "~1.5"
 	},
 	"require-dev": {
-		"nette/tester": "~1.0"
+		"nette/tester": "~1.0",
+		"mockery/mockery": "dev-master",
+		"besanek/presenter-tester": "dev-master"
 	},
 	"minimum-stability": "stable"
 }

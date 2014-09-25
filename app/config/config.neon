@@ -80,6 +80,10 @@ common:
 
 		shiftPatternDate: Screwfix\ShiftPatternDate
 		shiftPatternDateFactory: Screwfix\ShiftPatternDateFactory
+
+		settingsReposistory: Screwfix\SettingsRepository
+		settingsFacade: Screwfix\SettingsFacade
+		settings: Screwfix\Settings
 		
 		latteEngine: Screwfix\LatteEngine
 		template: Screwfix\Template
@@ -135,3 +139,11 @@ development < common:
 	nette:
 		container:
 			debugger: TRUE
+
+testing < development:
+	nette:
+		database:
+			dsn: 'mysql:host=localhost;dbname=screwfix_testing'
+			user: 'root'
+			password: 'winona'
+	

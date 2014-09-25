@@ -14,8 +14,9 @@ $configurator->setDebugMode(FALSE);
 $configurator->setTempDirectory(__DIR__ . '/../temp');
 $configurator->createRobotLoader()
 	->addDirectory(__DIR__ . '/../app')
+	->addDirectory(__DIR__ . '/../vendor')
 	->register();
 
-$configurator->addConfig(__DIR__ . '/../app/config/config.neon');
-$configurator->addConfig(__DIR__ . '/../app/config/config.local.neon');
+$configurator->addConfig(__DIR__ . '/../app/config/config.neon', 'testing');
+$configurator->addConfig(__DIR__ . '/../app/config/config.local.neon', $configurator::NONE);
 return $configurator->createContainer();

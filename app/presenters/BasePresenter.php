@@ -21,6 +21,7 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	 */
 	protected $acl;
 	
+	/** @var \Nette\Http\Request */
 	protected $request;
 	
 	protected $response;
@@ -66,6 +67,9 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	 * @var BankHolidayFacade
 	 */
 	protected $bankHolidayFacade;
+	
+	/** @var \Screwfix\Settings @inject **/
+	public $settings;
 	
 	/** @var \Screwfix\DateTimeFactory @inject **/
 	public $dateTimeFactory;
@@ -473,6 +477,18 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	public function isStickyFooter()
 	{
 		return ($this->name !== "Front:Home");
+	}
+	
+	/**
+	 * Login an user.
+	 * To be used only for unit testing purposes.
+	 * 
+	 * @param string $id
+	 * @param string $password
+	 */
+	public function login($id, $password)
+	{
+		$this->getUser()->login($id, $password);
 	}
 	
 	/**
