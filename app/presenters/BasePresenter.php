@@ -385,6 +385,9 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 		{
 			throw new \Screwfix\UnauthorizedAcces();
 		}
+		
+		$this->setHolidayTotalCredits();
+		$this->setHolidayYearStart();
         }
 	
 	public function beforeRender()
@@ -395,14 +398,14 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 		$this->template->isStickyFooter = $this->isStickyFooter();
 	}
 	
-	public function setHolidayYearStart($start)
-	{
-		$this->_holidayYearStart = $start;
+	public function setHolidayYearStart()
+	{		
+		$this->_holidayYearStart = $this->settings->get('holiday.yearStart');
 	}
 	
-	public function setHolidayTotalCredits($credits)
+	public function setHolidayTotalCredits()
 	{
-		$this->_holidayTotalCredits = $credits;
+		$this->_holidayTotalCredits = $this->settings->get('holiday.credits');
 	}
 	
 	/**
