@@ -121,17 +121,17 @@ common:
 				- allow('editor', 'Admin:Admin')
 				- allow('admin')
 
-		homePresenter:
-			class: FrontModule\HomePresenter
-			setup:
-				- setHolidayYearStart(%holiday.yearStart%)
-				- setHolidayTotalCredits(%holiday.credits%)
-
-		daysPresenter:
-			class: ApiModule\DaysPresenter
-			setup:
-				- setHolidayYearStart(%holiday.yearStart%)
-				- setHolidayTotalCredits(%holiday.credits%)
+#		homePresenter:
+#			class: FrontModule\HomePresenter
+#			setup:
+#				- setHolidayYearStart(%holiday.yearStart%)
+#				- setHolidayTotalCredits(%holiday.credits%)
+#
+#		daysPresenter:
+#			class: ApiModule\DaysPresenter
+#			setup:
+#				- setHolidayYearStart(%holiday.yearStart%)
+#				- setHolidayTotalCredits(%holiday.credits%)
 
 production < common:
 
