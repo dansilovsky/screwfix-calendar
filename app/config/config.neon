@@ -56,10 +56,10 @@ common:
 		calendarIntervalFactory: \Screwfix\CalendarIntervalFactory
 
 		patternRepository: Screwfix\PatternRepository
-		patternFacade: Screwfix\PatternFacade(@patternRepository)
+		patternFacade: Screwfix\PatternFacade
 
 		sysPatternRepository: Screwfix\SysPatternRepository
-		sysPatternFacade: Screwfix\SysPatternFacade(@sysPatternRepository)
+		sysPatternFacade: Screwfix\SysPatternFacade
 	
 		userRepository: Screwfix\UserRepository
 		userFacade: Screwfix\UserFacade
