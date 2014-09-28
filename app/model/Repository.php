@@ -18,6 +18,12 @@ abstract class Repository extends \Nette\Database\Table\Selection {
 	 */
 	const FORMAT_DATE = 'Y-m-d';
 	
+	/**
+	 * @var Nette\Database\Context 
+	 */
+	protected $context;
+
+
 	public function __construct($table, Nette\Database\Context $context)
 	{
 		parent::__construct($context->getConnection(), $table, $context->getDatabaseReflection());
