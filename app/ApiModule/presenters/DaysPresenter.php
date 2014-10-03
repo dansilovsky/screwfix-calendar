@@ -126,8 +126,7 @@ class DaysPresenter extends BasePresenter {
 				else if ($holiday['holiday'] === 1)
 				{
 					$countNewDebits += 0.5;
-				}
-					
+				}					
 			}			
 			
 			if (!$failed)
@@ -162,16 +161,33 @@ class DaysPresenter extends BasePresenter {
 				}
 			}
 			
+			if (!$failed)
+			{
+				try
+				{
+					$this->holidayFacade->updateHolidays($user_id, $data);
+					
+					$response = $data;
+				} 
+				catch (\PDOException $ex) 
+				{					
+					if ($ex->errorInfo[1] === 1062)
+					{
+						// all given holidays could not be added because of duplicate entry (a holiday already in db)
+						$failed = true;
+						$errorMessage = 'One of sent holidays is already in database.';
+					}
+					else 
+					{
+						throw $ex;
+					}
+				}
+			}
+			
 			if ($failed)
 			{
 				$this->response->setCode(\Nette\Http\Response::S400_BAD_REQUEST);
 				$response = array('error' => 'Failed validation. ' . $errorMessage);
-			}
-			else
-			{
-				$this->holidayFacade->updateHolidays($user_id, $data);
-				
-				$response = $data;
 			}			
 		}
 		
