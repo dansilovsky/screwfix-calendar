@@ -1,0 +1,6 @@
+array(
+	array('id' => '2014-09-01', 'holiday' => 0),
+	array('id' => '2014-09-02', 'holiday' => 0),
+	array('id' => '2014-09-03', 'holiday' => 0),
+	array('id' => '2014-09-04', 'holiday' => 0),
+)

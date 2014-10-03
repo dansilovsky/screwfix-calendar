@@ -1,115 +1,61 @@
 <?php
 
-$container = require 'c:/dev/www/calendar/tests/bootstrap.php';
+namespace Tests;
+
+$container = require __DIR__ . '/../../../bootstrap.configurator.php';
 
 use \Mockery as m;
-use Tester\Assert;
+use \Tester\Assert;
 
-// z DI kontejneru, který vytvořil bootstrap.php, získáme instanci PresenterFactory
-//$presenterFactory = $container->getByType('Nette\Application\IPresenterFactory');
-//$presenter = $presenterFactory->createPresenter('Api:Days');
-//// add holidays - all data valid
-//$presenter->setTestJsonData(array(
-//	0 =>
-//	array(
-//		'id' => '2014-09-08',
-//		'holiday' => 0,
-//	),
-//	1 =>
-//	array(
-//		'id' => '2014-09-09',
-//		'holiday' => 0,
-//	),
-//	2 =>
-//	array(
-//		'id' => '2014-09-10',
-//		'holiday' => 0,
-//	),
-//));
-//
-//$presenter->autoCanonicalize = false;
-//
-//$request = new Nette\Application\Request('Api:Days', 'PATCH', array('action' => 'update'));
-//
-//$response = (string) $presenter->run($request);
-//
-//Assert::same('[{"id":"2014-09-08","holiday":0},{"id":"2014-09-09","holiday":0}]', $response);
-
-
-//class SettingTest extends TestCase {
-//
-//	private $container;
-//	private $setting;
-//
-//	public function __construct(Container $container)
-//	{
-//		$this->container = $container;
-//		$this->setting = new Setting($container);
-//
-//		$this->container->getService('database')->loadFile(__DIR__ . '/../initialization.sql');
-//	}
-//
-//}
-
-class DaysPresenterTest extends Tester\TestCase {
-	/** @var \Nette\DI\Container */
-	private $_container;
+class DaysPresenterTest extends DbTestCase {
 	
-	/** @var \Nette\Database\Context */
-	private $_db;
+	/** Nette\Application\IPresenterFactory */
+	private $_presenterFactory;
 	
 	/** @var \ApiModule\DaysPresenter */
 	private $_presenter;
 	
 	private $_requestActionUpdate;
-	
-	public function __construct(\Nette\DI\Container $container)
+
+	public function setUp()
 	{
-		$this->_container = $container;
+		\Tester\Environment::lock('database', dirname(TEMP_DIR));
 		
-		$this->_db = $this->_container->getService('nette.database.default.context');
-		
-		$presenterFactory = $this->_container->getByType('Nette\Application\IPresenterFactory');
-		
-		$this->_presenter = $presenterFactory->createPresenter('Api:Days');
-	}
+		$this->_requestActionUpdate = $this->_createRequest('PATCH', array('action' => 'update'));
+	}	
 	
-	private function prepareDb($initializationFile)
-	{
-		$this->_db->query(file_get_contents(__DIR__ . '/' . $initializationFile));
+	private function prepare($initializationFile)
+	{		
+		$this->initialize(__DIR__, $initializationFile);
+		
+		$this->_presenterFactory = $this->container->getByType('Nette\Application\IPresenterFactory');			
+		
+		$this->_presenter = $this->_presenterFactory->createPresenter('Api:Days');
 	}
 	
 	private function _createRequest($method, array $action)
 	{
-		return new Nette\Application\Request('Api:Days', $method, $action);
+		return new \Nette\Application\Request('Api:Days', $method, $action);
 	}
-
-
-	public function setUp()
+	
+	public function testActionUpdate_addHolidays_failedValidation_invalidData()
 	{
-		# Příprava
-		$this->_requestActionUpdate = $this->_createRequest('PATCH', array('action' => 'update'));
-		
-	}
-
-	public function testActionUpdate_addHolidays()
-	{
-		$this->prepareDb('initialization.actionUpdate.addHolidays.sql');
+		$this->prepare('initialization.actionUpdate.addHolidays');
 		
 		$data = array(
 			0 =>
 			array(
-				'id' => '2014-09-08',
-				'holiday' => 0,
+				'id' => '{alert()}',
+				'holiday' => 1,
 			),
 			1 =>
 			array(
-				'id' => '2014-09-09',
+				'id' => '2014-11-04',
 				'holiday' => 0,
 			),
 			2 =>
 			array(
-				'id' => '2014-09-10',
+				'id' => '2014-11-05',
 				'holiday' => 0,
 			),
 		);
@@ -119,9 +65,110 @@ class DaysPresenterTest extends Tester\TestCase {
 		$this->_presenter->login('dans', 'dans');
 		
 		$response = $this->_presenter->run($this->_requestActionUpdate)->getPayload();
-		\Nette\Diagnostics\Debugger::dump($response);
-		exit;
-		Assert::true(true);
+
+		Assert::same(['error' => 'Failed validation. Invalid data.'], $response);
+		
+		
+	}
+	
+	public function testActionUpdate_addHolidays_failedValidation_holidaysFromDifferentHolidayYear()
+	{
+		$this->prepare('initialization.actionUpdate.addHolidays');
+		
+		$data = array(
+			0 =>
+			array(
+				'id' => '2015-03-30',
+				'holiday' => 1,
+			),
+			1 =>
+			array(
+				'id' => '2014-11-31',
+				'holiday' => 0,
+			),
+			2 =>
+			array(
+				'id' => '2015-04-01',
+				'holiday' => 0,
+			),
+		);
+		
+		$this->_presenter->setTestJsonData($data);
+		
+		$this->_presenter->login('dans', 'dans');
+		
+		$response = $this->_presenter->run($this->_requestActionUpdate)->getPayload();
+
+		Assert::same(['error' => 'Failed validation. Attempt to save holidays from different holiday years.'], $response);
+	}
+	
+	public function testActionUpdate_addHolidays_failedValidation_tooManyHolidays()
+	{
+		$this->prepare('initialization.actionUpdate.addHolidays.tooManyHolidays');
+		
+		$data = array(
+			0 =>
+			array(
+				'id' => '2014-09-01',
+				'holiday' => 0,
+			),
+			1 =>
+			array(
+				'id' => '2014-09-02',
+				'holiday' => 0,
+			),
+			2 =>
+			array(
+				'id' => '2014-09-03',
+				'holiday' => 0,
+			),
+			3 =>
+			array(
+				'id' => '2014-09-04',
+				'holiday' => 0,
+			),
+		);
+		
+		$this->_presenter->setTestJsonData($data);
+		
+		$this->_presenter->login('dans', 'dans');		
+		
+		$response = $this->_presenter->run($this->_requestActionUpdate)->getPayload();
+
+		Assert::same(['error' => 'Failed validation. Too many holidays.'], $response);
+	}
+	
+	public function testActionUpdate_addHolidays_aHolidayInDatabaseAlreadyExist()
+	{
+		$this->prepare('initialization.actionUpdate.addHolidays');
+		
+		$data = array(
+			0 =>
+			array(
+				'id' => '2014-09-06',
+				'holiday' => 0,
+			),
+			1 =>
+			array(
+				'id' => '2014-09-07',
+				'holiday' => 0,
+			),
+			2 =>
+			array(
+				'id' => '2014-09-09',
+				'holiday' => 0,
+			),
+		);
+		
+		$this->_presenter->setTestJsonData($data);
+		
+		$this->_presenter->login('dans', 'dans');
+		
+		$response = $this->_presenter->run($this->_requestActionUpdate)->getPayload();
+		
+		
+
+		Assert::same(['error' => 'Failed validation. One of sent holidays is already in database.'], $response);
 	}
 }
 

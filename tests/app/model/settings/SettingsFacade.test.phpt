@@ -1,15 +1,15 @@
 <?php
+/**
+ * @skip
+ */
 
-namespace Test;
+namespace Tests;
 
 $container = require __DIR__ . '/../../../bootstrap.php';
 
 use \Mockery as m;
 use Tester;
 use Tester\Assert;
-
-
-
 
 class SettingsFacadeTest extends \Tester\TestCase
 {
