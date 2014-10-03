@@ -27,6 +27,8 @@ abstract class Repository extends \Nette\Database\Table\Selection {
 	public function __construct($table, Nette\Database\Context $context)
 	{
 		parent::__construct($context->getConnection(), $table, $context->getDatabaseReflection());
+		
+		$this->context = $context;
 	}
 	
 	public function getContext()

@@ -26,10 +26,16 @@ abstract class RepositoryFacade {
 	 */
 	protected $date;
 	
+	/**
+	 * @var Nette\Database\Context 
+	 */
+	protected $context;
+	
 	public function __construct(Repository $repository, Cache $cache, CalendarDateTime $date)
 	{
 		$this->repository = $repository;
 		$this->cache = $cache;
 		$this->date = $date;
+		$this->context = $repository->getContext();
 	}
 }

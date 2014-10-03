@@ -1,5 +1,7 @@
 log/*
+nbproject/*
 temp/*
+tests/temp/*
 vendor/*
 !vendor/others
 

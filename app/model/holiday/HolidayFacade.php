@@ -68,13 +68,34 @@ class HolidayFacade extends RepositoryFacade {
 		else
 		{
 			//create
-			foreach($holidays as $holiday)
+			try
 			{
-				$this->repository->save($holiday['id'], $holiday['holiday'], $user_id);
+				$this->context->beginTransaction();
+				
+				foreach($holidays as $holiday)
+				{
+					$this->repository->save($holiday['id'], $holiday['holiday'], $user_id);
+				}
+				
+				$this->context->commit();
+			} 
+			catch (Exception $ex) 
+			{
+				$this->context->rollBack();
+				
+				throw $ex;
 			}
 		}
 	}
 	
+	/**
+	 * Get holiday debits.
+	 * 
+	 * @param integer $user_id
+	 * @param string $from date in format yyyy-mm-dd
+	 * @param string $to date in format yyyy-mm-dd
+	 * @return float|integer
+	 */
 	public function getDebits($user_id, $from, $to)
 	{
 		$selection = $this->repository->between($user_id, $from, $to);
@@ -88,4 +109,6 @@ class HolidayFacade extends RepositoryFacade {
 		
 		return $debits;
 	}
+	
+	
 }
