@@ -15,7 +15,7 @@ class HolidayFacadeTest extends DbTestCase {
 	{
 		\Tester\Environment::lock('database', dirname(TEMP_DIR));
 		
-		$this->initialize(__DIR__);
+		$this->prepare(__DIR__);
 		
 		$holidayRepository = $this->container->getService('holidayRepository');		
 		$mCache = m::mock('Screwfix\Cache');
