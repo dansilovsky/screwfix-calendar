@@ -21,7 +21,7 @@ class DbTestCase extends \Tester\TestCase {
 	 * @param string $path path to initialization file
 	 * @param string $name filename without suffix
 	 */
-	public function initialize($path, $name = null)
+	public function prepare($path, $name = null)
 	{
 		$fileName = $name === null ? 'initialization' : $name;
 
