@@ -12,15 +12,15 @@ namespace Screwfix;
 class HolidayRepository extends Repository {
 
 	private $_name = 'holiday';
-	
+
 	public function __construct(\Nette\Database\Context $context)
 	{
 		parent::__construct($this->_name, $context);
 	}
-	
+
 	/**
 	 * Fetch selection for given date and user id
-	 * 
+	 *
 	 * @param string $date
 	 * @param integer $user_id
 	 * @return \Nette\Database\Table\Selection
@@ -30,7 +30,7 @@ class HolidayRepository extends Repository {
 		return $this->where('date', $date)
 			->where('user_id', $user_id);
 	}
-	
+
 	/**
 	 * Fetch selection of holidays between given dates
 	 *
@@ -46,10 +46,10 @@ class HolidayRepository extends Repository {
 			->where('date <= ?', $to)
 			->order('date');
 	}
-	
+
 	/**
 	 * Inserts new holiday.
-	 * 
+	 *
 	 * @param string $date
 	 * @param integer $halfday
 	 * @param integer $user_id
@@ -62,8 +62,7 @@ class HolidayRepository extends Repository {
 			'halfday' => (string) $halfday,
 			'user_id' => $user_id
 		);
-		
+
 		return $this->insert($data);
 	}
-	
 }
