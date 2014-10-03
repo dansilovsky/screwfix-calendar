@@ -12,7 +12,7 @@ use Nette\Utils\Json;
  */
 abstract class BasePresenter extends \Screwfix\CalendarPresenter implements ApiPresenter {
 
-	private $_jsonData;
+	private $_jsonData = null;
 	
 	protected function startup() {
 		parent::startup();
@@ -42,7 +42,7 @@ abstract class BasePresenter extends \Screwfix\CalendarPresenter implements ApiP
 	
 	/**
 	 * Get decoded json sent by client
-	 * @return array|null Returns the value encoded in json in appropriate PHP array. NULL is returned if the json cannot be decoded.
+	 * @return array|null Returns the value encoded in json in appropriate PHP array. NULL is returned if the json cannot be decoded was not sent in request.
 	 */
 	public function getJson() {
 		return $this->_jsonData;
