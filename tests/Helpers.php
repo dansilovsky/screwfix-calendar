@@ -43,6 +43,7 @@ class Helpers {
 		$returnValidValues[] = false;
 		
 		return m::mock($repositoryClass)
+			->shouldReceive('getContext')
 			->shouldReceive('rewind')
 			->shouldReceive('valid')->times($timesValid)->andReturnValues($returnValidValues)
 			->shouldReceive('current')->times($timesCurrent)->andReturnValues($returnCurrentValues)
