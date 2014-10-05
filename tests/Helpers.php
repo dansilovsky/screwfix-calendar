@@ -9,7 +9,7 @@ class Helpers {
 	 * Return traversable mock of selection which has one or more results (Nette\Database\Table\ActiverRow instances).
 	 * At each iteration returns \Tests\ActiveRowMock.
 	 * 
-	 *   eg. Helpers::getRepositoryMock(['id', 'username'], [[1, 'dan'], [2, 'petr'], [3, 'bea']]);
+	 *   eg. Helpers::getRepositoryMock(['id', 'username'], [[1, 'dan'], [2, 'petr'], [3, 'bea']])->getMock();
 	 * 
 	 * @param array $keys array of keys in selection
 	 * @param array $rows 
