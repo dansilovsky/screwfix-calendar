@@ -75,9 +75,17 @@ class DaysPresenter extends BasePresenter {
 //		sleep(60);
 //		$this->response->setCode(\Nette\Http\Response::S400_BAD_REQUEST);
 		
-		$data = $this->getJson();
+		$data = $this->getJson();		
 		
-		if ($day_id !== null)
+		$failed = false;
+		$errorMessage = '';
+		
+		if ($data === null)
+		{
+			$failed = true;
+			$errorMessage = 'No json data received.';
+		}		
+		else if ($day_id !== null)
 		{
 			// update notes or sys notes
 			if (array_key_exists('note', $data))
@@ -95,6 +103,8 @@ class DaysPresenter extends BasePresenter {
 			else
 			{
 				$this->response->setCode(\Nette\Http\Response::S400_BAD_REQUEST);
+				$failed = true;
+				$errorMessage = 'Invalid request.';
 			}
 		}
 		else
@@ -102,8 +112,6 @@ class DaysPresenter extends BasePresenter {
 			// update holidays
 
 			// validation
-			$failed = false;
-			$errorMessage = '';
 			$count = count($data);
 			$countNewDebits = 0;
 			
@@ -182,13 +190,13 @@ class DaysPresenter extends BasePresenter {
 						throw $ex;
 					}
 				}
-			}
-			
-			if ($failed)
-			{
-				$this->response->setCode(\Nette\Http\Response::S400_BAD_REQUEST);
-				$response = array('error' => 'Failed validation. ' . $errorMessage);
 			}			
+		}
+			
+		if ($failed)
+		{
+			$this->response->setCode(\Nette\Http\Response::S400_BAD_REQUEST);
+			$response = array('error' => 'Failed. ' . $errorMessage);
 		}
 		
 		$this->sendResponse(new \Nette\Application\Responses\JsonResponse($response));
