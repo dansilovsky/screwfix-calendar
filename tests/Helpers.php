@@ -16,7 +16,7 @@ class Helpers {
 	 * @param string $repositoryClass optional
 	 * @return \Mockery\CompositeExpectation
 	 */
-	static public function getRepositoryMock(array $keys, array $rows, $repositoryClass = 'Nette\Database\Table\Selection')
+	static public function getMockRepoIterator(array $keys, array $rows, $repositoryClass = 'Nette\Database\Table\Selection')
 	{
 		$timesCurrent = count($rows);
 		$timesValid = $timesCurrent + 1;

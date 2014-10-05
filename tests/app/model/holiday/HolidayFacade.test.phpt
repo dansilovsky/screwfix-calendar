@@ -31,7 +31,7 @@ class HolidayFacadeTest extends \Tester\TestCase {
 	
 	public function testGetDebits()
 	{		
-		$mSelection = Helpers::getRepositoryMock(['halfday'], [[0], [0], [0], [1]])->getMock();
+		$mSelection = Helpers::getMockRepoIterator(['halfday'], [[0], [0], [0], [1]])->getMock();
 		
 		$this->mRepository = m::mock('Screwfix\HolidayRepository')
 			->shouldReceive('getContext')
