@@ -98,7 +98,7 @@ abstract class CalendarPresenter extends BasePresenter {
 	
 	protected function getHolidayFilter()
 	{
-		return new \Screwfix\HolidayFilter($this->holidayFacade->holidays($this->identity->id, $this->from, $this->to));
+		return new \Screwfix\HolidayFilter($this->holidayFacade->getHolidays($this->identity->id, $this->from, $this->to));
 	}
 	
 	protected function getBankHolidayFilter()

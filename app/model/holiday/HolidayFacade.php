@@ -24,7 +24,7 @@ class HolidayFacade extends RepositoryFacade {
 	 * @param    string   $to     
 	 * @return   array          empty array if no holidays found between given dates
 	 */
-	public function holidays($user_id, CalendarDateTime $from, CalendarDateTime $to)
+	public function getHolidays($user_id, CalendarDateTime $from, CalendarDateTime $to)
 	{
 		$from = $from->format(Repository::FORMAT_DATE);
 		$to = $to->format(Repository::FORMAT_DATE);
