@@ -9,12 +9,12 @@ class Helpers {
 	 * Return traversable mock of selection which has one or more results (Nette\Database\Table\ActiverRow instances).
 	 * At each iteration returns \Tests\ActiveRowMock.
 	 * 
-	 *   eg. Helpers::getRepositoryMock(['id', 'username'], [[1, 'dan'], [2, 'petr'], [3, 'bea']])->getMock();
+	 *   eg. Helpers::getRepositoryMock(['id', 'username'], [[1, 'dan'], [2, 'petr'], [3, 'bea']]);
 	 * 
 	 * @param array $keys array of keys in selection
 	 * @param array $rows 
 	 * @param string $repositoryClass optional
-	 * @return \Mockery\CompositeExpectation
+	 * @return \Mockery\MockInterface
 	 */
 	static public function getRepositoryMock(array $keys, array $rows, $repositoryClass = 'Nette\Database\Table\Selection')
 	{
@@ -43,12 +43,11 @@ class Helpers {
 		$returnValidValues[] = false;
 		
 		return m::mock($repositoryClass)
-			->shouldReceive('getContext')->never()
 			->shouldReceive('rewind')
 			->shouldReceive('valid')->times($timesValid)->andReturnValues($returnValidValues)
 			->shouldReceive('current')->times($timesCurrent)->andReturnValues($returnCurrentValues)
 			->shouldReceive('next')
-			;
+			->getMock();
 	}
 }
 
