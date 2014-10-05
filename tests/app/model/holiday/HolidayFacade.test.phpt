@@ -24,9 +24,14 @@ class HolidayFacadeTest extends \Tester\TestCase {
 		$this->mCalendarDateTime = m::mock('Screwfix\CalendarDateTime');
 	}
 	
+	public function tearDown()
+	{
+		m::close();
+	}
+	
 	public function testGetDebits()
 	{		
-		$mSelection = Helpers::getRepositoryMock(['halfday'], [[0], [0], [0], [1]]);
+		$mSelection = Helpers::getRepositoryMock(['halfday'], [[0], [0], [0], [1]])->getMock();
 		
 		$this->mRepository = m::mock('Screwfix\HolidayRepository')
 			->shouldReceive('getContext')

@@ -14,7 +14,7 @@ class Helpers {
 	 * @param array $keys array of keys in selection
 	 * @param array $rows 
 	 * @param string $repositoryClass optional
-	 * @return \Mockery\MockInterface
+	 * @return \Mockery\CompositeExpectation
 	 */
 	static public function getRepositoryMock(array $keys, array $rows, $repositoryClass = 'Nette\Database\Table\Selection')
 	{
@@ -47,7 +47,7 @@ class Helpers {
 			->shouldReceive('valid')->times($timesValid)->andReturnValues($returnValidValues)
 			->shouldReceive('current')->times($timesCurrent)->andReturnValues($returnCurrentValues)
 			->shouldReceive('next')
-			->getMock();
+			;
 	}
 }
 
