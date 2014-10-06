@@ -11,14 +11,24 @@ INSERT INTO `user` (`id`, `username`, `role`, `email`, `password`) VALUES
 -- --------------------------------------------------------
 
 --
--- Dumping data for table `holiday`
+-- Dumping data for table `note`
 --
 
-INSERT INTO `holiday` (`date`, `halfday`, `user_id`) VALUES
-('2014-02-03', '1', 1),
-('2014-09-08', '0', 1),
-('2014-09-09', '0', 1),
-('2014-09-10', '0', 1);
+INSERT INTO `note` (`id`, `note`, `date`, `user_id`) VALUES
+(1, 'Note 1', '2014-08-01', 1),
+(2, 'Note 2', '2014-09-01', 1),
+(3, 'Note 3', '2014-09-01', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Dumping data for table `sys_note`
+--
+
+INSERT INTO `sys_note` (`id`, `note`, `date`) VALUES
+(1, 'Sys note 1', '2014-04-02'),
+(2, 'Sys note 2', '2014-04-02'),
+(3, 'Sys note 3', '2014-04-05');
 
 -- --------------------------------------------------------
 
