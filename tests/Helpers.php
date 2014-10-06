@@ -50,6 +50,23 @@ class Helpers {
 			->shouldReceive('next')
 			;
 	}
+	
+	/**
+	 * Return empty traversable mock of selection.
+	 * 
+	 *   eg. Helpers::getMockRepoEmptyIterator()->getMock();
+	 * 
+	 * @param string $repositoryClass optional
+	 * @return \Mockery\CompositeExpectation
+	 */
+	static public function getMockRepoEmptyIterator($repositoryClass = 'Nette\Database\Table\Selection')
+	{
+		return m::mock($repositoryClass)
+			->shouldReceive('getContext')
+			->shouldReceive('rewind')
+			->shouldReceive('valid')->andReturn(false)
+			;
+	}
 }
 
 class ActiveRowMock implements \ArrayAccess {	
