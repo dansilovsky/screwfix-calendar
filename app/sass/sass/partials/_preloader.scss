@@ -1,0 +1,15 @@
+.preloader {
+	left: 0;
+	position: absolute;
+	width: 100%;
+	top: 0;
+	span {
+		@include border-radius(px-to-em(2px, $base-font-size));
+		height: px-to-em(3px, $base-font-size);
+		left: 0;
+		position: absolute;
+		width: px-to-em(3px, $base-font-size);
+		background-color: #fff;
+	}
+}
+

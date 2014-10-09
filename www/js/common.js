@@ -115,21 +115,93 @@
 	};
 	
 	var queues = common.queues = {
-		'connectingAnimation': [],
+		'preloader': [],
 	};
 	
-	var ConnectingAnimationView = common.ConnectingAnimationView = Backbone.View.extend({
-		className: 'box-popup',
+	var Preloader = common.Preloader = Backbone.View.extend({
+		className: 'preloader',
+		isStop: false,
+		$items: null,
+		timeoutIds: [],
+		settings: {
+			delay: 200,
+			itemsCount: 5,
+			speed: 2500,
+			startDelay: 1000
+		},
 		
 		initialize: function() {
 			this.render();
 		},
 		
 		render: function() {
-			this.$el.text('Loading ...');
-			this.$el.css({top: 0, left: 0})
-			.appendTo(appGlobal.$body);
-		}		
+			var that = this;
+			var $item;
+			
+			for (var i=0; i<this.settings.itemsCount; i++) {
+				$item = Zidane.create('span');				
+				this.$el.append($item);
+			}
+			
+			this.$items = this.$el.find('span');
+			
+			var timeoutId = setTimeout(play, this.settings.startDelay);			
+			
+			this.timeoutIds = [];
+			
+			this.timeoutIds.push(timeoutId);
+			
+			function play() {
+				that.play();
+			}
+			
+		},
+		
+		play: function() {
+			if (this.isStop === true) {
+				return;
+			}
+			
+			var that = this;
+			
+			this.$el.appendTo(appGlobal.$body);
+			
+			this.$items.each(function(i, item) {
+				var $item = $(item);
+				
+				var timeoutId = setTimeout(animate, i*that.settings.delay);
+				
+				that.timeoutIds.push(timeoutId);
+				
+				function animate() {
+					that.animate($item, that);
+				}
+			});
+		},
+		
+		animate: function($item, thisView) {
+			if (thisView.isStop === true) { 
+				return;
+			}
+			
+			var that = this;
+			$item.css('left', '0%');
+			$item.animate({left: '99%'}, thisView.settings.speed, 'swing', animate);
+			
+			function animate() {
+				thisView.animate($item, thisView);
+			}			
+		},	
+		
+		stop: function() {
+			for (var i=0; i<this.timeoutIds.length; i++) {
+				clearTimeout(this.timeoutIds[i]);
+			}
+			
+			this.isStop = true;
+			
+			return this;
+		}
 	});
 	
 	var LayoverView = common.LayoverView = Backbone.View.extend({
@@ -263,23 +335,22 @@
 		});
 	};
 	
-	var connectingAnimation = common.connectingAnimation = function() {
-		if (Screwfix.common.queues.connectingAnimation.length === 0) {
-			var animation = new Screwfix.common.ConnectingAnimationView();
-
-			Screwfix.common.queues.connectingAnimation.push(animation);
+	var preloader = common.preloader = function() {
+		if (Screwfix.common.queues.preloader.length === 0) {
+			var animation = new Screwfix.common.Preloader();
+			Screwfix.common.queues.preloader.push(animation);
 		}
 		else {
-			Screwfix.common.queues.connectingAnimation.push(null);
+			Screwfix.common.queues.preloader.push(null);
 		}
 	};
 	
-	var stopConnectingAnimation = common.stopConnectingAnimation = function() {
-		if (Screwfix.common.queues.connectingAnimation.length > 1) {
-			Screwfix.common.queues.connectingAnimation.pop();
+	var stopPreloader = common.stopPreloader = function() {
+		if (Screwfix.common.queues.preloader.length > 1) {
+			Screwfix.common.queues.preloader.pop();
 		}
-		else if (Screwfix.common.queues.connectingAnimation.length === 1) {
-			Screwfix.common.queues.connectingAnimation.pop().remove();
+		else if (Screwfix.common.queues.preloader.length === 1) {
+			Screwfix.common.queues.preloader.pop().stop().remove();
 		}
 	}
 	
@@ -368,15 +439,15 @@ Backbone.Model.prototype.screwfix = Screwfix;
 
 Backbone.Model.prototype.ajaxErrorAlert = Screwfix.common.ajaxErrorAlert;
 
-Backbone.Model.prototype.connectingAnimation = Screwfix.common.connectingAnimation;
+Backbone.Model.prototype.preloader = Screwfix.common.preloader;
 
-Backbone.Model.prototype.stopConnectingAnimation = Screwfix.common.stopConnectingAnimation;
+Backbone.Model.prototype.stopPreloader = Screwfix.common.stopPreloader;
 
-Backbone.Model.prototype.on('request', Backbone.Model.prototype.connectingAnimation);
+Backbone.Model.prototype.on('request', Backbone.Model.prototype.preloader);
 
-Backbone.Model.prototype.on('sync', Backbone.Model.prototype.stopConnectingAnimation);
+Backbone.Model.prototype.on('sync', Backbone.Model.prototype.stopPreloader);
 
-Backbone.Model.prototype.on('error', Backbone.Model.prototype.stopConnectingAnimation);
+Backbone.Model.prototype.on('error', Backbone.Model.prototype.stopPreloader);
 
 Backbone.Model.prototype.on('error', Backbone.Model.prototype.ajaxErrorAlert);
 
@@ -385,9 +456,9 @@ Backbone.Collection.prototype.screwfix = Screwfix;
 
 Backbone.Collection.prototype.ajaxErrorAlert = Screwfix.common.ajaxErrorAlert;
 
-Backbone.Collection.prototype.connectingAnimation = Screwfix.common.connectingAnimation;
+Backbone.Collection.prototype.preloader = Screwfix.common.preloader;
 
-Backbone.Collection.prototype.stopConnectingAnimation = Screwfix.common.stopConnectingAnimation;
+Backbone.Collection.prototype.stopPreloader = Screwfix.common.stopPreloader;
 
 // extend Backbone View prototype
 Backbone.View.prototype.screwfix = Screwfix;

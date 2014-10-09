@@ -483,6 +483,27 @@ textarea {
   float: none;
 }
 
+/* line 1, ../../app/sass/sass/partials/_preloader.scss */
+.preloader {
+  left: 0;
+  position: absolute;
+  width: 100%;
+  top: 0;
+}
+/* line 6, ../../app/sass/sass/partials/_preloader.scss */
+.preloader span {
+  -webkit-border-radius: 0.14286em;
+  -moz-border-radius: 0.14286em;
+  -ms-border-radius: 0.14286em;
+  -o-border-radius: 0.14286em;
+  border-radius: 0.14286em;
+  height: 0.21429em;
+  left: 0;
+  position: absolute;
+  width: 0.21429em;
+  background-color: #fff;
+}
+
 /* line 4, ../../app/sass/sass/calendar/partials/_content.scss */
 #calendarBar {
   height: 2.85714em;
