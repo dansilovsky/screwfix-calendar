@@ -7,7 +7,7 @@ namespace Screwfix;
  *
  * @author Daniel Silovsky
  */
-class RepositoryFactory {
+abstract class RepositoryFactory {
 	
 	protected $context;
 	

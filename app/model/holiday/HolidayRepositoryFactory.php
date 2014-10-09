@@ -11,5 +11,8 @@ namespace Screwfix;
  */
 class HolidayRepositoryFactory extends RepositoryFactory {
 	
-	
+	public function create()
+	{
+		return new HolidayRepository($this->context);
+	}
 }

@@ -7,7 +7,7 @@ namespace Screwfix;
  *
  * @author Daniel Silovsky
  */
-class RepositoryFacadeFactory {
+abstract class RepositoryFacadeFactory {
 	
 	protected $repositoryFactory;
 	
@@ -20,12 +20,5 @@ class RepositoryFacadeFactory {
 		$this->repositoryFactory = $repositoryFactory;
 		$this->cache = $cache;
 		$this->date = $date;
-	}
-	
-	public function create()
-	{
-		$repository = $this->repositoryFactory->create();
-		
-		return new self($repository, $this->_cache, $this->_date);
 	}
 }

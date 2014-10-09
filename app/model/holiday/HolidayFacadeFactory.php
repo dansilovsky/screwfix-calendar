@@ -15,5 +15,12 @@ class HolidayFacadeFactory extends RepositoryFacadeFactory {
 	{
 		parent::__construct($repositoryFactory, $cache, $date);
 	}
+	
+	public function create()
+	{
+		$repository = $this->repositoryFactory->create();		
+		
+		return new HolidayFacade($repository, $this->cache, $this->date);
+	}
 
 }

@@ -70,5 +70,18 @@ class SysPatternFacade extends RepositoryFacade {
 		
 		return $selection;
 	}
+	
+	
+	/**
+	 * Only for temporary usage when you really need update don't be scared to change this method to suit your needs
+	 * @param type $id
+	 * @param \Screwfix\ShiftPatternFilter $pattern
+	 */
+	public function updatePattern($id, ShiftPatternFilter $pattern)
+	{
+		$pattern = serialize($pattern);
+		
+		$this->repository->get($id)->update(array('pattern' => $pattern));
+	}
 
 }

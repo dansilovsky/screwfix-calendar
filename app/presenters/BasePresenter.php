@@ -390,7 +390,7 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 		}
 		
 		$this->setHolidayTotalCredits();
-		$this->setHolidayYearStart();	
+		$this->setHolidayYearStart();		
         }
 	
 	public function beforeRender()

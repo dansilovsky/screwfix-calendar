@@ -9,5 +9,8 @@ namespace Screwfix;
  */
 class PatternRepositoryFactory extends RepositoryFactory {
 	
-	
+	public function create()
+	{
+		return new PatternRepository($this->context);
+	}
 }

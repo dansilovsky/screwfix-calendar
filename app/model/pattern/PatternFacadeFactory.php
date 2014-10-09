@@ -9,4 +9,11 @@ class PatternFacadeFactory extends RepositoryFacadeFactory {
 		parent::__construct($repositoryFactory, $cache, $date);
 	}
 	
+	public function create()
+	{
+		$repository = $this->repositoryFactory->create();		
+		
+		return new PatternFacade($repository, $this->cache, $this->date);
+	}
+	
 }
