@@ -56,7 +56,9 @@ common:
 		calendarIntervalFactory: \Screwfix\CalendarIntervalFactory
 
 		patternRepository: Screwfix\PatternRepository
+		patternRepositoryFactory: Screwfix\PatternRepositoryFactory
 		patternFacade: Screwfix\PatternFacade
+		patternFacadeFactory: Screwfix\PatternFacadeFactory
 
 		sysPatternRepository: Screwfix\SysPatternRepository
 		sysPatternFacade: Screwfix\SysPatternFacade
@@ -71,7 +73,7 @@ common:
 		sysNoteFacade: Screwfix\SysNoteFacade
 
 		holidayRepository: Screwfix\HolidayRepository
-		holidayRepositoryFacade: Screwfix\HolidayRepositoryFactory
+		holidayRepositoryFactory: Screwfix\HolidayRepositoryFactory
 		holidayFacade: Screwfix\HolidayFacade
 		holidayFacadeFactory: Screwfix\HolidayFacadeFactory
 

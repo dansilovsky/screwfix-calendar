@@ -9,17 +9,7 @@ namespace Screwfix;
  * @copyright (c) 2013, Daniel Silovsky
  * @license http://www.screwfix-calendar.co.uk/license
  */
-class HolidayRepositoryFactory {
+class HolidayRepositoryFactory extends RepositoryFactory {
 	
-	private $_context;
-
-	public function __construct(\Nette\Database\Context $context)
-	{
-		$this->_context = $context;
-	}
-
-	public function create()
-	{
-		return new HolidayRepository($this->_context);
-	}
+	
 }

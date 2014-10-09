@@ -63,6 +63,9 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	/** @var \Screwfix\HolidayFacadeFactory @inject **/
 	public $holidayFacadeFactory;
 	
+	/** @var \Screwfix\PatternFacadeFactory @inject **/
+	public $patternFacadeFactory;
+	
 	/**
 	 * @var BankHolidayFacade
 	 */
@@ -349,8 +352,8 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 //			),
 //		);
 //		
-		$shiftPattern = new ShiftPatternFilter(new ShiftPatternDate);
-		$shiftPattern->setPattern($patternArray);
+//		$shiftPattern = new ShiftPatternFilter(new ShiftPatternDate);
+//		$shiftPattern->setPattern($patternArray);
 		
 		
                 parent::startup();
@@ -387,7 +390,7 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 		}
 		
 		$this->setHolidayTotalCredits();
-		$this->setHolidayYearStart();
+		$this->setHolidayYearStart();	
         }
 	
 	public function beforeRender()
