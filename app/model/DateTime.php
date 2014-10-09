@@ -42,6 +42,8 @@ class DateTime extends \Nette\Utils\DateTime {
 	public function toNow()
 	{
 		$this->modify('now');
+		
+		return $this;
 	}
 	
 	/**
