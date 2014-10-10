@@ -38,8 +38,6 @@ class ShiftPatternFilter extends CalendarFilter {
 	public function __construct(ShiftPatternDate $patternDate)
 	{
 		$this->_patternDate = $patternDate;
-		
-		$this->_today = $patternDate->toString();
 	}
 
 	public function setPattern(array $pattern)
@@ -65,7 +63,7 @@ class ShiftPatternFilter extends CalendarFilter {
 		
 		if ($date < $this->_today)
 		{
-			return 'past';
+			return 'NA';
 		}
 		
 		// set a date for which you want to get working hours
@@ -78,6 +76,12 @@ class ShiftPatternFilter extends CalendarFilter {
 		return $this->_pattern[$week][$day];
 	}
 	
+	public function setToday()
+	{
+		$this->_today = $this->_patternDate->toNow()->toString();
+	}
+
+
 	/**
 	 * Gets pattern array
 	 * 

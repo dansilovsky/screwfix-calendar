@@ -107,12 +107,17 @@ class CalendarDay extends CalendarDateTime {
 	/**
 	 * Returns start of shift if is set.
 	 *
-	 * @return string|null
+	 * @return string|null date in format 'yyyy-mm-dd' or 'NA' or 'off'
 	 */
 	public function shiftStart()
 	{
 		if ($this->isShift())
 		{
+			if (is_string($this->_data[self::KEY_SHIFT]))
+			{
+				return $this->_data[self::KEY_SHIFT];
+			}
+			
 			return $this->_data[self::KEY_SHIFT][0];
 		}
 
@@ -122,12 +127,17 @@ class CalendarDay extends CalendarDateTime {
 	/**
 	 * Returns end of shift if set.
 	 *
-	 * @return string|null
+	 * @return string|null date in format 'yyyy-mm-dd' or 'NA' or 'off'
 	 */
 	public function shiftEnd()
 	{
 		if ($this->isShift())
 		{
+			if (is_string($this->_data[self::KEY_SHIFT]))
+			{
+				return $this->_data[self::KEY_SHIFT];
+			}
+			
 			return $this->_data[self::KEY_SHIFT][1];
 		}
 

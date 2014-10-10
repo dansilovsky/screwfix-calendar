@@ -165,17 +165,20 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 		{			
 			foreach ($week as $day)
 			{
-				if ($day !== null)
+				if ($day === 'off')
 				{
-					if (
-						!preg_match('/^\d{2}:\d{2}$/', $day[0]) &&
-						!preg_match('/^\d{2}:\d{2}$/', $day[1])
-
-					) 
-					{ 
-						return false;
-					}
+					continue;
 				}
+				
+				if (
+					preg_match('/^\d{2}:\d{2}$/', $day[0]) &&
+					preg_match('/^\d{2}:\d{2}$/', $day[1])
+				) 
+				{ 
+					continue;
+				}
+				
+				return false;
 			}
 		}
 		

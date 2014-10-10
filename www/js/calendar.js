@@ -847,7 +847,8 @@
 		 * @returns {array}
 		 */
 		buildDays: function(range) {
-			var dateRunner = new Zidane.Calendar();
+			var dateRunner = new Zidane.Calendar();			
+			var today = dateRunner.today().toString();
 			dateRunner.setFromStr(range.start);			
 			var days = [];
 			var loop;
@@ -859,8 +860,8 @@
 					"sysNote": null,
 					"holiday": null,
 					"bankHoliday": null,
-					"shiftStart": null,
-					"shiftEnd": null,
+					"shiftStart": 'NA',
+					"shiftEnd": 'NA',
 					"year": dateRunner.getYear(),
 					"isFirstDayOfWeek": dateRunner.isFirstDayOfWeek(),
 					"isLastDayOfWeek": dateRunner.isLastDayOfWeek()
@@ -1820,7 +1821,7 @@
 		
 		isDayOff: function() {			
 			return (
-				this.model.get('shiftStart') === null || 
+				this.model.get('shiftStart') === 'off' || 
 				this.model.get('holiday') !== null || 
 				this.model.get('bankHoliday') !== null
 			);

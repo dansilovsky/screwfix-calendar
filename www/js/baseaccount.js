@@ -284,7 +284,7 @@
 			}
 			
 			for (var i=0; i<2; i++) {
-				pattern[w].push(null);
+				pattern[w].push('off');
 			}
 			
 			this.render(pattern);
@@ -320,7 +320,7 @@
 			
 			this.times = options.data.times;
 			
-			this.state = options.data.times !== null ? 'in' : 'off';
+			this.state = options.data.times == 'off' ? 'off' : 'in';
 			
 			this.render();
 		},
@@ -369,7 +369,7 @@
 				this.renderIn();
 			}
 			else {
-				this.times = null;
+				this.times = 'off';
 				this.renderOff();
 			}
 			
@@ -377,7 +377,7 @@
 		},
 		
 		/**
-		 * Sets times from selects. If off day then it sets times to null
+		 * Sets times from selects. If off day then it sets times to 'off'
 		 * @returns {this}
 		 */
 		setTimes: function() {
@@ -387,7 +387,7 @@
 				this.times[1] = $(this.$selects[2]).val() + ':' + $(this.$selects[3]).val();
 			}
 			else {
-				this.times = null;
+				this.times = 'off';
 			}
 			
 			return this;

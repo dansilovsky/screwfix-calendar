@@ -10,7 +10,7 @@
 	{foreach $week as $dayNum => $times}
 		
 		<td {if !$times}class="dayOff"{/if}>
-			{if $times}
+			{if $times !== 'off'}
 				<div class="date">{$date|day}</div>
 				<div class="formRowInputpattern">
 					<label>from</label>

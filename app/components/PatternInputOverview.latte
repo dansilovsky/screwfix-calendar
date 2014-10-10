@@ -8,7 +8,7 @@
 		</td>
 	{foreach $week as $dayNum => $times}		
 		<td>
-			{if $times}
+			{if $times !== 'off'}
 				<div class="date">{$date|day}</div>
 				<div class="time">
 					{$times[0]} - {$times[1]}

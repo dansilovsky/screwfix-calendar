@@ -9,7 +9,7 @@
 		<% var times; for(var ii=0; ii<mo.pattern[i].length; ii++, mo.date.nextDay()) { times = mo.pattern[i][ii]; %>
 		<td>
 			<div class="date"><%= mo.date.toString() %></div>
-			<% if (times) { %>
+			<% if (times !== 'off') { %>
 			<div class="time">
 				<%- times[0] %> - <%- times[1] %>
 			</div>
@@ -41,7 +41,7 @@
 				times = mo.pattern[i][ii];
 				mo.view.daysData.push({date: mo.date.clone(), times: times}); 
 		%>
-		<td class="day <% if (!times) { %>dayOff" <% } else { %>dayIn"<% } %>>
+		<td class="day <% if (times === 'off') { %>dayOff" <% } else { %>dayIn"<% } %>>
 		</td>
 		<% } %>
 	</tr>

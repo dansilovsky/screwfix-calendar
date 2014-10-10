@@ -50,7 +50,10 @@ abstract class CalendarPresenter extends BasePresenter {
 	 */
 	protected function getShiftPatternFilter()
 	{
-		return $this->patternFacade->getPatternFilter($this->identity->id);
+		$pattern = $this->patternFacade->getPatternFilter($this->identity->id);
+		$pattern->setToday();
+		
+		return $pattern; 
 	}
 	
 	protected function calendarDataToResponseArray() 
@@ -92,6 +95,8 @@ abstract class CalendarPresenter extends BasePresenter {
 		{
 			throw new \Screwfix\BadDataSentException('Sys Shift Pattern for given pattern id does not exist. Bad data sent via cookie.');
 		}
+		
+		$shiftPatternFilter->setToday();
 
 		return $shiftPatternFilter;
 	}

@@ -45,10 +45,12 @@
 				:) Holiday
 			<% } else if (mo.data.holiday === 1) { %>
 				:) Halfday holiday
-			<% } else if (mo.data.shiftStart !== null) { %>
-				<%- mo.data.shiftStart + ' - ' + mo.data.shiftEnd %>
+			<% } else if (mo.data.shiftStart === 'off') { %>
+				:)
+			<% } else if (mo.data.shiftStart === 'NA') { %>
+			
 			<% } else { %>
-				:)	
+				<%- mo.data.shiftStart + ' - ' + mo.data.shiftEnd %>	
 			<% } %>
 		</div>
 		<div class="selected"></div>
