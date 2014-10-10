@@ -905,7 +905,7 @@
 		
 		updateHolidays: function(models) {
 			var that = this;
-			this.connectingAnimation();
+			this.preloader();
 			
 			var xhr = $.ajax({
 				url: that.url(), 
@@ -914,12 +914,12 @@
 				data: JSON.stringify(models),
 				contentType: 'application/json',
 				success: function(data) {
-					that.stopConnectingAnimation();
+					that.stopPreloader();
 					that.add(data, {merge: true});
 					that.trigger('holidaysUpdated');
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
-					that.stopConnectingAnimation();
+					that.stopPreloader();
 					that.ajaxErrorAlert(null, jqXHR, null);
 					that.trigger('holidaysUpdateError');
 				}
