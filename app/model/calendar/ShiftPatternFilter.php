@@ -47,12 +47,12 @@ class ShiftPatternFilter extends CalendarFilter {
 	}
 
 	/**
-	 * Takes a date and returns working hours or null(off work) on that particular date given.
+	 * Takes a date and returns working hours or 'off'(off work) or 'NA'(in past) on that particular date given.
 	 *
 	 * @param   string   $date        a date in date format
 	 * @throws \InvalidArgumentException
 	 * @thows  ShiftPattern_ArrayNotSet_Exeption
-	 * @return array|null                    array contains start and end time of a shift (eg. array('07:00', '15:00')), if off work returns null
+	 * @return array|null                    array contains start and end time of a shift (eg. array('07:00', '15:00')), if off work returns 'off', if in past returns 'NA'
 	 */
 	public function day($date)
 	{
