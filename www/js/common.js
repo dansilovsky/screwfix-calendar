@@ -335,7 +335,7 @@
 		});
 	};
 	
-	var preloader = common.preloader = function() {
+	var launchPreloader = common.launchPreloader = function() {
 		if (Screwfix.common.queues.preloader.length === 0) {
 			var animation = new Screwfix.common.Preloader();
 			Screwfix.common.queues.preloader.push(animation);
@@ -439,11 +439,11 @@ Backbone.Model.prototype.screwfix = Screwfix;
 
 Backbone.Model.prototype.ajaxErrorAlert = Screwfix.common.ajaxErrorAlert;
 
-Backbone.Model.prototype.preloader = Screwfix.common.preloader;
+Backbone.Model.prototype.launchPreloader = Screwfix.common.launchPreloader;
 
 Backbone.Model.prototype.stopPreloader = Screwfix.common.stopPreloader;
 
-Backbone.Model.prototype.on('request', Backbone.Model.prototype.preloader);
+Backbone.Model.prototype.on('request', Backbone.Model.prototype.launchPreloader);
 
 Backbone.Model.prototype.on('sync', Backbone.Model.prototype.stopPreloader);
 
@@ -456,7 +456,7 @@ Backbone.Collection.prototype.screwfix = Screwfix;
 
 Backbone.Collection.prototype.ajaxErrorAlert = Screwfix.common.ajaxErrorAlert;
 
-Backbone.Collection.prototype.preloader = Screwfix.common.preloader;
+Backbone.Collection.prototype.launchPreloader = Screwfix.common.launchPreloader;
 
 Backbone.Collection.prototype.stopPreloader = Screwfix.common.stopPreloader;
 

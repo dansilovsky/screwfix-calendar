@@ -905,7 +905,7 @@
 		
 		updateHolidays: function(models) {
 			var that = this;
-			this.preloader();
+			this.launchPreloader();
 			
 			var xhr = $.ajax({
 				url: that.url(), 
