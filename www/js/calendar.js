@@ -803,7 +803,7 @@
 				dateRunner.nextDay();
 				
 				if (loop > 100) {
-					throw 'Only 100 loops in while statement allowed';
+					throw 'Only 100 loops in while statement allowed.';
 				}
 			}
 			
@@ -827,9 +827,14 @@
 					throw 'Unidentified move.';
 				}
 				
+				this.launchPreloader();
+				
 				this.fetch({
 					remove: false,
-					data: {from: this.loadRange.start, to: this.loadRange.end}
+					data: {from: this.loadRange.start, to: this.loadRange.end},
+					success: function(collection) {
+						collection.stopPreloader();
+					}
 				});				
 				
 				if (this.models.length > 366 && this.moveCounter%3 === 0) {
