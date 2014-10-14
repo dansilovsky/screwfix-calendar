@@ -87,6 +87,10 @@ common:
 		settingsFacade: Screwfix\SettingsFacade
 		settings: Screwfix\Settings
 		
+		reverseReachIterator: Dan\ReverseReachIterator
+
+		holidayCredits: Screwfix\HolidayCredits
+
 		latteEngine: Screwfix\LatteEngine
 		template: Screwfix\Template
 
