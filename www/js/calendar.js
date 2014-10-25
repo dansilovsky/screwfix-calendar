@@ -12,7 +12,7 @@
 			addNote: _.template($('#addNoteTemplate').html(), null, {variable: 'data'}),
 			editNote: _.template($('#editNoteTemplate').html(), null, {variable: 'data'}),
 			addHolidaysForm: _.template($('#addHolidaysFormTemplate').html(), null, {variable: 'data'}),
-			cancelHolidaysForm: _.template($('#cancelHolidaysFormTemplate').html(), null, {variable: 'data'}),
+			cancelHolidaysForm: _.template($('#cancelHolidaysFormTemplate').html(), null, {variable: 'data'})
 		}
 	};
 	
@@ -171,6 +171,7 @@
 	 * @trigger selected(selection)   selection ended
 	 * @param {jQuery} $selector  
 	 * @param {array}  cells      array of all cells(jQuery objects) in a grid
+	 * @param {hash}   options
 	 */
 	var Selector = function($selector, cells, options) {
 		
@@ -492,12 +493,11 @@
 
 			R.previousWinH = R.winH;
 			R.previousTableH = R.tableH;
-		}
+		};
 		
 		/**		 
 		 * Resizes all cells in the same row to the height of the given one in argument.
 		 * Only if the required height is greater than heigt of other cells in the same row.
-		 * @param {int} height
 		 * @param {int} orderNumber
 		 */
 		this.resizeRowUp = function(orderNumber) {
@@ -523,7 +523,7 @@
 			
 			R.rowsToggled[row] = true;
 			
-		}
+		};
 		
 		/**
 		 * Resizes all cells in the same row to the their natural height.
@@ -537,7 +537,7 @@
 			}
 			
 			R.rowsToggled[row] = false;
-		}
+		};
 		
 		/**
 		 * Determine if the cell's row is toggled.
@@ -547,11 +547,11 @@
 			var row = Math.floor(orderNumber/7);			
 			
 			return R.rowsToggled[row];
-		}
+		};
 
 		this.clear = function() {
 			R.$window.off('resize', null, resizeCallback);
-		}	
+		};	
 	};
 	
 	/**
@@ -592,6 +592,7 @@
 			/**
 			 * Buils object and returns object holidays info from selection.
 			 * @param {array} selection  array of selected DayView objects
+			 * @param {string} mode
 			 * @returns {object} selected holidays info or null if selection is empty
 			 */
 			getSelectionInfo: function(selection, mode) {
@@ -732,7 +733,7 @@
 			getAvailable: function(year) {				
 				return H.years[year].credits - H.years[year].debits;
 			}
-		}		
+		};		
 	};
 	
 	// Navigator model
@@ -821,7 +822,7 @@
 					this.push(days, {sort: false});
 				}
 				else if (move ===  DateNavigator.BACKWARD) {
-					this.unshift(days, {sort: false})
+					this.unshift(days, {sort: false});
 				}
 				else {
 					throw 'Unidentified move.';
@@ -1173,7 +1174,7 @@
 				this.parent.nextMonth(false);
 			}
 			else {
-				this.parent.nextMonth(true)
+				this.parent.nextMonth(true);
 			}
 			
 			return this;
@@ -1250,8 +1251,8 @@
 					$(el).removeClass('on');
 				},
 				switch: function(mode, i) {
-					that.trigger('switched', mode)
-				},
+					that.trigger('switched', mode);
+				}
 			});
 		},
 		
@@ -1422,7 +1423,7 @@
 			}
 			
 			if (this.resizer) {
-				this.resizer.clear()
+				this.resizer.clear();
 				this.resizer = null;
 			}
 		},
@@ -2018,7 +2019,7 @@
 			
 			this.allowClearCollectionEvents = true;	
 			
-			this.info.tHolidaysYear = function(from, to) {return from.substr(0, 4) + '-' + to.substr(2, 2)};
+			this.info.tHolidaysYear = function(from, to) {return from.substr(0, 4) + '-' + to.substr(2, 2);};
 			this.info.tIsMainAddAction = this.isMainAddAction;
 			this.info.tIsExtraAddAction = this.isExtraAddAction;
 			
@@ -2093,7 +2094,6 @@
 		/**
 		 * Adds holidays for given days
 		 * @param {array} addHolidays  array of DayViews
-		 * @param {int}   halfday      1 - is halfday, 0 - is not halfday
 		 */
 		add: function(addHolidays) {
 			var halfday = this.isAddHalfday ? 1 : 0;
@@ -2108,7 +2108,7 @@
 		
 		/**
 		 * Cancel holidays for given days
-		 * @param {array} addHolidays  array of DayViews
+		 * @param {array} cancelHolidays  array of DayViews
 		 */
 		cancel: function(cancelHolidays) {
 			var models = [];
