@@ -34,6 +34,7 @@ common:
 		session:
 			gc_maxlifetime: 1209600
 			expiration: 14 days
+			autoStart: true
 
 
 	services:
@@ -87,7 +88,7 @@ common:
 		settingsFacade: Screwfix\SettingsFacade
 		settings: Screwfix\Settings
 		
-		reverseReachIterator: Dan\ReverseReachIterator
+		reachIterator: Dan\ReachIterator
 
 		holidayCredits: Screwfix\HolidayCredits
 
@@ -96,6 +97,8 @@ common:
 
 		patternInputOverviwFactory: Screwfix\PatternInputOverviewFactory
 		patternInputEditFactory: Screwfix\PatternInputEditFactory
+
+		employmentDateInputFactory: Screwfix\EmploymentDateInputFactory
 
 		shiftPattern:
 			parameters: [pattern]
