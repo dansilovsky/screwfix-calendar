@@ -38,11 +38,6 @@ class Settings extends \ArrayObject {
 			}
 		}
 		
-		if (is_array($value))
-		{
-			return new self($value);
-		}
-		
 		return $value;
 	}
 
