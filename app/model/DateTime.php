@@ -152,9 +152,17 @@ class DateTime extends \Nette\Utils\DateTime {
 	 * 
 	 * @return \Screwfix\DateTime
 	 */
-	public function subYear()
+	public function subYear($count = null)
 	{
-		$this->sub($this->_oneYearInterval);
+		if ($count === null)
+		{
+			$this->sub($this->_oneYearInterval);
+		}
+		else
+		{
+			$interval = new \DateInterval('P' . $count. 'Y');
+			$this->sub($interval);
+		}		
 		
 		return $this;
 	}
