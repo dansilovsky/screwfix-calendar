@@ -2,7 +2,7 @@
 
 namespace Screwfix;
 
-use Dan\ReverseReachIterator;
+use Dan\ReachIterator;
 use Dan\Lang;
 
 /**
@@ -14,48 +14,74 @@ class HolidayCredits {
 
 	/** @var array */
 	private $credits;
+	
+	/**  @var DateTimeFactory */
+	private $dateFactory;
+	
+	/** @var integer */
+	private $borderYearsNumber;
 
-	/** @var ReverseReachIterator **/
-	private $reverseIterator;
 
 
-	public function __construct(ReverseReachIterator $reverseIterator, Settings $settings)
+	public function __construct(Settings $settings, DateTimeFactory $dateFactory)
 	{
-		$this->credits = $settings->get('holiday.credits')->getArrayCopy();
-		$this->reverseIterator = $reverseIterator;
-		$this->reverseIterator->setArray($this->credits);
+		$this->credits = $settings->get('holiday.credits');
+		$this->dateFactory = $dateFactory;
 	}
 
+	
 	public function getFormSelection()
 	{
 		$selection = [];
-
-		foreach ($this->reverseIterator as $years => $credits)
-		{
-			if ($this->reverseIterator->isFirst())
-			{
-				$nextYears = $this->reverseIterator->reachNext();
-
-				$selection[$years] = "Less than " . $this->pluralizeYear($nextYears);
-				continue;
-			}
-
-			if ($this->reverseIterator->isLast())
-			{
-				$selection[$years] = "More than " . $this->pluralizeYear($years);
-				continue;
-			}
-
-			$nextYears = $this->reverseIterator->reachNext();
-
-			$selection[$years] = "Less than " . $this->pluralizeYear($nextYears) . " and more than " . $this->pluralizeYear($years);
-		}
+		
+		$borderYearsNumber = $this->getBorderYearsNumber();
+		
+		$selection['full'] = "More than " . $this->pluralizeYear($borderYearsNumber);
+		
+		$selection['date'] = "Less than " . $this->pluralizeYear($borderYearsNumber);
 
 		return $selection;
 	}
+	
+	
+	public function workOutPostCredits()
+	{
+		
+	}
+	
 
 	private function pluralizeYear($number)
 	{
 		return Lang::pluralize('%d year', '%d years', $number);
+	}
+	
+	/**
+	 * @return string date in format yyyy-mm-dd
+	 */
+	public function getBorderDate()
+	{
+		$date = $this->dateFactory->create();
+		
+		$yearsCount = $this->getBorderYearsNumber();
+		
+		$date->subYear($yearsCount);
+		
+		return $date->toString();
+	}
+	
+	/**
+	 * @return integer
+	 */
+	public function getBorderYearsNumber()
+	{
+		if ($this->borderYearsNumber === null)
+		{
+			end($this->credits);
+		
+			$this->borderYearsNumber = key($this->credits) + 1;
+		}
+		
+		return $this->borderYearsNumber;
+		
 	}
 }

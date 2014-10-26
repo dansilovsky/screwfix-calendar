@@ -3,11 +3,11 @@
 	var appGlobal  = {
 		// stores compiled tamplates
 		templates: {
+			formEmploymentDate: _.template($('#formEmploymentDateTemplate').html(), null, {variable: 'mo'}),
 			formPatternInputOverview: _.template($('#formPatternInputOverviewTemplate').html(), null, {variable: 'mo'}),
 			formPatternInputEdit: _.template($('#formPatternInputEditTemplate').html(), null, {variable: 'mo'}),
 			formPatternInputDayIn: _.template($('#formPatternInputDayInTemplate').html(), null, {variable: 'mo'}),
 			formPatternInputDayOff: _.template($('#formPatternInputDayOffTemplate').html(), null, {variable: 'mo'})
-
 		}
 	};
 	
@@ -26,7 +26,7 @@
 			
 			var el = this.$el.find(this.formIdSelector)[0];			
 			this.formView = new FormView({el: el,master: this, parent: this});
-		},
+		}
 	});	
 	
 	var FormView = Backbone.View.extend({
@@ -37,7 +37,10 @@
 			// AppView
 			this.parent = options.parent;
 			
-			var el = this.$el.find(this.master.formIdSelector + '-sysPatternSelect')[0];
+			var el = this.$el.find('#formEmployment')[0];
+			this.employmentView = new EmploymentView({el: el, master: this.master, parent: this});
+			
+			el = this.$el.find(this.master.formIdSelector + '-sysPatternSelect')[0];
 			this.patternSelectorView = new PatternSelectorView({el: el, master: this.master, parent: this});
 			
 			el = this.$el.find(this.master.formIdSelector + '-patternInput')[0];
@@ -50,6 +53,83 @@
 		
 		setPatternInput: function() {
 			this.patternInputView.setPatternInput();
+		}
+	});
+	
+	var EmploymentView = Backbone.View.extend({
+		
+		initialize: function(options) {
+			// AppView
+			this.master = options.master;
+			// FormView
+			this.parent = options.parent;
+			
+			var el = this.$el.find(this.master.formIdSelector + '-employmentLength')[0];
+			this.employmentLengthView = new EmploymentLengthView({el: el, master: this.master, parent: this});
+			
+			el = this.$el.find('#formEmploymentDate')[0];
+			this.employmentDateView = new EmploymentDateView({el: el, master: this.master, parent: this});
+		}
+	});
+	
+	var EmploymentLengthView = Backbone.View.extend({
+		
+		initialize: function(options) {
+			// AppView
+			this.master = options.master;
+			// EmploymentView
+			this.parent = options.parent;
+		},
+		
+		events: {
+			"change": "change"
+		},
+		
+		change: function() {
+			this.parent.employmentDateView;
+			if (this.$el.val() === 'full') {
+				this.parent.employmentDateView.hide();
+			}
+			else {
+				this.parent.employmentDateView.display();
+			}
+		}
+	});
+	
+	var EmploymentDateView = Backbone.View.extend({
+		template: appGlobal.templates.formEmploymentDate,
+		isBuilt: false,
+		$renderEl: null,		
+		
+		initialize: function(options) {
+			// AppView
+			this.master = options.master;
+			// EmploymentView
+			this.parent = options.parent;
+			
+			if (this.el.hasChildNodes()) {
+				this.isBuilt = true;
+				this.$renderEl = $(this.el.firstChild);
+			}
+			
+		},
+		
+		render: function() {
+			this.$el.html(this.template());
+			this.isBuilt = true;
+		},
+		
+		display: function() {
+			if (!this.isBuilt) {
+				this.render();
+			}
+			else {
+				this.$el.append(this.$renderEl);
+			}
+		},
+		
+		hide: function() {
+			this.$renderEl = $(this.$el.children()[0]).detach();
 		}
 	});
 	
@@ -417,7 +497,7 @@
 				timeUnit = '0' + timeUnit;
 			}
 			
-			return timeUnit
+			return timeUnit;
 		},
 		
 		/**
@@ -432,7 +512,7 @@
 			time = {
 				h: time[0],
 				m: time[1]
-			}
+			};
 			
 			return time[type] == t ? 'selected="selected"' : '';
 		}

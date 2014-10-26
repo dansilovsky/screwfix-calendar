@@ -72,6 +72,39 @@
 			</div>
 			{/if}
 		</div>
+		<div id="formEmployment">
+			{if $form['employmentLength']->errors}
+			<div class="formRowError">
+				<ul>
+					<li n:foreach="$form['employmentLength']->errors as $error">{$error}</li>
+				</ul>
+				{input employmentLength}
+			</div>	
+			{else}
+			<div class="formRowLabel">
+				{label employmentLength /} {input employmentLength}
+			</div>				
+			{/if}			
+			{if $form['employmentDate']->errors}
+			<div id="formEmploymentDate">
+				<div class="formRowError">
+					<ul>
+						<li n:foreach="$form['employmentDate']->errors as $error">{$error}</li>
+					</ul>
+					{label employmentDate /} {input employmentDate}
+				</div>
+			</div>
+			{elseif $form['employmentDate']->getValue() !== null}
+			<div id="formEmploymentDate">
+				<div class="formRowNoLabel">
+					{label employmentDate /} {input employmentDate}
+				</div>
+			</div>
+			{else}
+			<div id="formEmploymentDate"></div>
+			{/if}
+			
+		</div>
 		<div id="formPattern">
 			<div class="formRowNolabel">
 				{label sysPatternSelect /} {input sysPatternSelect}

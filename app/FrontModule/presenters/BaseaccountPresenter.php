@@ -19,11 +19,17 @@ abstract class BaseaccountPresenter extends BasePresenter {
 	/** @var \Screwfix\PatternInputOverviewFactory @inject */
 	public $patternInputOverviewFactory;
 	
+	/** @var \Screwfix\EmploymentDateInputFactory @inject */
+	public $employmentDateInputFactory;
+	
 	/** @var \Screwfix\ShiftPatternIteratorFactory @inject */
 	public $patternIteratorFactory;
 	
 	/** @var \Screwfix\ShiftPatternFilterFactory @inject */
 	public $shiftPatternFilterFactory;
+	
+	/** @var \Screwfix\HolidayCredits @inject */
+	public $holidayCredits;
 	
 	/**
 	 * Builds default input pattern value array from pattern array.
@@ -82,5 +88,20 @@ abstract class BaseaccountPresenter extends BasePresenter {
 		}
 		
 		return $adjustedPattern;
-	}	
+	}
+	
+	/**
+	 * Helper method works out from fomrs employmentDate value whether it is date value or full.
+	 * It returns processed value accordingly.
+	 * eg. full is "s:full" of date is d:2014-01-01
+	 * 
+	 * @param \Nette\Utils\ArrayHash $formValues
+	 * @return string
+	 */
+	public function workOutFormEmployment(\Nette\Utils\ArrayHash $formValues)
+	{
+		return isset($formValues->employmentDate)
+			? 'd:' . $formValues->employmentDate
+			: 's:full';
+	}
 }

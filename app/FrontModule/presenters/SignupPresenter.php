@@ -38,6 +38,12 @@ class SignupPresenter extends BaseaccountPresenter {
 			->setRequired('Reenter a password please.')
 			->addRule(Form::EQUAL, 'Passwords do not match.', $form['password']);
 		$form->addCheckbox('remember', 'Remember me');
+		
+		$employmentLengthSelection = $this->holidayCredits->getFormSelection();
+		
+		$form->addSelect('employmentLength', 'How many years have you been employed?', $employmentLengthSelection);	
+		
+		$form['employmentDate'] = $this->employmentDateInputFactory->create();
 
 		// shift pattern part		
 		$sysPatternSelection = $this->sysPatternFacade->getFormSelection();
@@ -87,12 +93,13 @@ class SignupPresenter extends BaseaccountPresenter {
 		else
 		{
 			$hashedPassword = \Screwfix\Authenticator::calculateHash($formValues->password);
-
+			
 			$userArr = array(
 				'username' => $formValues->username,
 				'role' => 'member',
 				'email' => $formValues->email,
-				'password' => $hashedPassword
+				'password' => $hashedPassword,
+				'credits' => $this->workOutFormEmployment($formValues)
 			);
 
 			try
@@ -103,7 +110,7 @@ class SignupPresenter extends BaseaccountPresenter {
 
 				if ($formValues->remember)
 				{
-					$user->setExpiration('+14 days', FALSE);
+					$user->setExpiration('+14 days', false);
 				}
 
 				$user->login($formValues->username, $formValues->password);

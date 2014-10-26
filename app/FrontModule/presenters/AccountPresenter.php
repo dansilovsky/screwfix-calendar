@@ -131,6 +131,49 @@ class AccountPresenter extends BaseaccountPresenter {
 		}
 	}
 	
+	protected function createComponentEmploymentLengthForm()
+	{
+		$form = new BaseaccountForm($this, 'employmentLengthForm');
+		
+		$employmentLengthSelection = $this->holidayCredits->getFormSelection();
+		
+		$employmentLengthVal = $this->getEmploymentLengthValue();
+		
+		$form->addSelect('employmentLength', 'How many years have you been employed?', $employmentLengthSelection)
+			->setDefaultValue($employmentLengthVal);
+		
+		$employmentDateValue = $this->getEmploymentDateValue();
+		
+		$form['employmentDate'] = $this->employmentDateInputFactory->create();
+		$form['employmentDate']->setDefaultValue($employmentDateValue);
+		
+		$form->addSubmit('edit', 'Edit')
+			->setAttribute('class', 'button');
+		
+		$form->onSuccess[] = $this->employmentLengthFormSubmitted;
+		
+		return $form;
+	}
+	
+	public function employmentLengthFormSubmitted(Form $form)
+	{
+		$formValues = $form->getValues();
+		
+		try
+		{
+			$data = ['credits' => $this->workOutFormEmployment($formValues)];
+
+			$this->userFacade->update($this->user->getId(), $data);
+			
+		}
+		catch (\Exception $ex)
+		{
+			$form->addError('Sorry, something went wrong. Please try again.');
+		}
+		
+		$this->identity->credits = $data['credits'];
+	}
+	
 	protected function createComponentSetupForm() 
 	{
 		$userPatternSelection = $this->patternFacade->getFormSelection($this->identity->id);
@@ -174,5 +217,19 @@ class AccountPresenter extends BaseaccountPresenter {
 		{
 			$form->addError('Sorry, something went wrong. Please try again.');
 		}
+	}
+	
+	public function getEmploymentLengthValue()
+	{
+		$type = substr($this->identity->credits, 0, 1);
+		
+		return $type === 'd' ? 'date' : 'full';
+	}
+	
+	public function getEmploymentDateValue()
+	{
+		list($type, $val) = explode(':', $this->identity->credits);
+		
+		return $type === 'd' ? $val : null;	
 	}
 }

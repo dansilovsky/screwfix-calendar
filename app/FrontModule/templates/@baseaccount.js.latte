@@ -1,3 +1,11 @@
+<script type="text/template" id="formEmploymentDateTemplate">
+	<div class="formRowNoLabel">
+		<label for="frm-baseaccountForm-employmentDate">Date of start of your employment</label>
+		<input name="employmentDate[day]" id="frm-baseaccountForm-employmentDate" type="text" placeholder="dd">
+		<input name="employmentDate[month]" id="frm-baseaccountForm-employmentDate" type="text" placeholder="mm">
+		<input name="employmentDate[year]" type="text" placeholder="yyyy">
+	</div>	
+</script>
 <script type="text/template" id="formPatternInputOverviewTemplate">
 	<input type="hidden" name="patternInput" value="<%- mo.patternStr %>">
 	<tr><th></th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Sunday</th></tr>
@@ -95,7 +103,7 @@
 		<a href="javascript:;" title="Change to working day">change</a>
 	</div>
 </script>
-<script type="text/javascript" src="{$basePath}/js/underscore-dev-1.6.0.js"></script>
+<script type="text/javascript" src="{$basePath}/js/underscore-dev-1.7.0.js"></script>
 <script type="text/javascript" src="{$basePath}/js/backbone-dev-1.1.2.js"></script>
 <script type="text/javascript" src="{$basePath}/js/zidane.js"></script>
 <script type="text/javascript">
