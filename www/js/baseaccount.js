@@ -79,6 +79,8 @@
 			this.master = options.master;
 			// EmploymentView
 			this.parent = options.parent;
+			
+			this.borderYearsNumber = this.$el.attr('data-border-years-number');
 		},
 		
 		events: {
@@ -110,12 +112,11 @@
 			if (this.el.hasChildNodes()) {
 				this.isBuilt = true;
 				this.$renderEl = $(this.el.firstChild);
-			}
-			
+			}			
 		},
 		
 		render: function() {
-			this.$el.html(this.template());
+			this.$el.html(this.template({borderYearsNumber: this.parent.employmentLengthView.borderYearsNumber}));
 			this.isBuilt = true;
 		},
 		

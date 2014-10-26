@@ -41,7 +41,8 @@ class SignupPresenter extends BaseaccountPresenter {
 		
 		$employmentLengthSelection = $this->holidayCredits->getFormSelection();
 		
-		$form->addSelect('employmentLength', 'How many years have you been employed?', $employmentLengthSelection);	
+		$form->addSelect('employmentLength', 'How many years have you been employed?', $employmentLengthSelection)
+			->setAttribute('data-border-years-number', $this->holidayCredits->getBorderYearsNumber());
 		
 		$form['employmentDate'] = $this->employmentDateInputFactory->create();
 

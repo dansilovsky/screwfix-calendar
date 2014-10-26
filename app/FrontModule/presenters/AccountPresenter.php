@@ -140,7 +140,8 @@ class AccountPresenter extends BaseaccountPresenter {
 		$employmentLengthVal = $this->getEmploymentLengthValue();
 		
 		$form->addSelect('employmentLength', 'How many years have you been employed?', $employmentLengthSelection)
-			->setDefaultValue($employmentLengthVal);
+			->setDefaultValue($employmentLengthVal)
+			->setAttribute('data-border-years-number', $this->holidayCredits->getBorderYearsNumber());
 		
 		$employmentDateValue = $this->getEmploymentDateValue();
 		
