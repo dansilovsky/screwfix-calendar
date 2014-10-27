@@ -78,6 +78,15 @@ class AccountPresenter extends BaseaccountPresenter {
 			}
 		}
 		
+//		if (isset($userArr['username']))
+//		{
+//			$identity->username = $userArr['username'];
+//		}
+//		
+//		if (isset($userArr['email'])) 
+//		{
+//			$identity->email = $userArr['email'];
+//		}		
 	}
 	
 	protected function createComponentPasswordForm()
@@ -128,6 +137,8 @@ class AccountPresenter extends BaseaccountPresenter {
 			{
 				$form->addError('Sorry, something went wrong. Please try again.');
 			}
+			
+			$this->identity->password = $hashedNewPassword;
 		}
 	}
 	
