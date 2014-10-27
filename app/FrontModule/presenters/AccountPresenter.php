@@ -78,15 +78,15 @@ class AccountPresenter extends BaseaccountPresenter {
 			}
 		}
 		
-//		if (isset($userArr['username']))
-//		{
-//			$identity->username = $userArr['username'];
-//		}
-//		
-//		if (isset($userArr['email'])) 
-//		{
-//			$identity->email = $userArr['email'];
-//		}		
+		if (isset($userArr['username']))
+		{
+			$identity->username = $userArr['username'];
+		}
+		
+		if (isset($userArr['email'])) 
+		{
+			$identity->email = $userArr['email'];
+		}		
 	}
 	
 	protected function createComponentPasswordForm()
