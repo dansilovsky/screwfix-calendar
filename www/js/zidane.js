@@ -53,9 +53,7 @@
 				var m = month || 1;
 				var d = day || 1;
 
-				this.setYear(y);
-				this.setMonth(m);
-				this.setDate(d);
+				this.setYear(y, m, d);
 
 				return this;
 			},
@@ -319,8 +317,14 @@
 				return map[date.getDay()];
 			},
 
-			setYear: function(y) {
-				date.setFullYear(y);	
+			setYear: function(y, m, d) {
+				m = m || this.getMonth();
+				d = d || this.getDate();
+				
+				m--;
+				
+				date.setFullYear(y, m, d);
+				
 				return this;
 			},
 			
@@ -328,11 +332,20 @@
 			 * Set month.
 			 * 
 			 * @param {int}  m  month 1 to 12 not like native Date object 0 to 11
+			 * @param {int}  d  day of the month 1 to 31
 			 * @returns {this}
 			 */
-			setMonth: function(m) {
+			setMonth: function(m, d) {
 				m--;
-				date.setMonth(m);
+				d = d || date.getDate();
+				
+				date.setMonth(m, d);
+				
+				if (date.getMonth() > m)
+				{
+					date.setDate(0);
+				}
+				
 				return this;
 			},
 
