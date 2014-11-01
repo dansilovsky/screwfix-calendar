@@ -69,7 +69,7 @@
 				var m = date.substr(5, 2);
 				var d = date.substr(8,2);
 				
-				this.set(y, m, d);
+				this.setYear(y, m, d);
 				
 				return this;
 			},
@@ -316,7 +316,15 @@
 				
 				return map[date.getDay()];
 			},
-
+			
+			/**
+			 * Sets year.
+			 * 
+			 * @param {int} y yer
+			 * @param {int} m month optional
+			 * @param {int} d day optional
+			 * @returns {this}
+			 */
 			setYear: function(y, m, d) {
 				m = m || this.getMonth();
 				d = d || this.getDate();
