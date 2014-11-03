@@ -52,3 +52,7 @@ class ShiftPatternDateException extends \LogicException {
 class PatternInput_InvalidData_Exception extends \Exception {
 	
 }
+
+class BankHolidayFacade_InvalidData extends \Exception {
+	
+}

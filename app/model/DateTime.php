@@ -16,6 +16,8 @@ class DateTime extends \Nette\Utils\DateTime {
 	 */
 	const FORMAT_DATE = 'Y-m-d';
 	
+	const FORMAT_DATE_PATTERN = '^\d{4}-\d{2}-\d{2}$';
+	
 	private $_oneDayInterval;
 	
 	private $_oneMonthInterval;
@@ -31,7 +33,14 @@ class DateTime extends \Nette\Utils\DateTime {
 		$this->_oneDayInterval = new \DateInterval('P1D');
 		$this->_oneMonthInterval = new \DateInterval('P1M');
 		$this->_oneYearInterval = new \DateInterval('P1Y');
-		
+	}
+	
+	/**
+	 * @return DateTime
+	 */
+	public function cloneMe()
+	{
+		return clone $this;
 	}
 	
 	/**

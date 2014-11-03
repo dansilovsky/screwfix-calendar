@@ -65,7 +65,9 @@ common:
 		sysPatternFacade: Screwfix\SysPatternFacade
 	
 		userRepository: Screwfix\UserRepository
+		userRepositoryFactory: Screwfix\UserRepositoryFactory
 		userFacade: Screwfix\UserFacade
+		userFacadeFactory: Screwfix\UserFacadeFactory
 
 		noteRepository: Screwfix\NoteRepository
 		noteFacade: Screwfix\NoteFacade
@@ -79,7 +81,9 @@ common:
 		holidayFacadeFactory: Screwfix\HolidayFacadeFactory
 
 		bankHolidayRepository: Screwfix\BankHolidayRepository
+		bankHolidayRepositoryFacade: Screwfix\BankHolidayRepositoryFactory
 		bankHolidayFacade: Screwfix\BankHolidayFacade
+		bankHolidayFacadeFactory: Screwfix\BankHolidayFacadeFactory
 
 		shiftPatternDate: Screwfix\ShiftPatternDate
 		shiftPatternDateFactory: Screwfix\ShiftPatternDateFactory

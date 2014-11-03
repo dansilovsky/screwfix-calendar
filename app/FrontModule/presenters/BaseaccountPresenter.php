@@ -28,9 +28,6 @@ abstract class BaseaccountPresenter extends BasePresenter {
 	/** @var \Screwfix\ShiftPatternFilterFactory @inject */
 	public $shiftPatternFilterFactory;
 	
-	/** @var \Screwfix\HolidayCredits @inject */
-	public $holidayCredits;
-	
 	/**
 	 * Builds default input pattern value array from pattern array.
 	 * 

@@ -24,7 +24,7 @@ class EmploymentDateInput extends \Nette\Forms\Controls\BaseControl
 		
 		$years = Lang::pluralize('%d year', '%d years', $this->holidayCredits->getBorderYearsNumber());
 		
-		parent::__construct("If you have worked less than $years, we need a date of start of your employment.");
+		parent::__construct("If you have worked less than $years, we need a date of start of your employment");
 		
 		$this->addRule(__CLASS__ . '::validateGregorianDate', 'Date is invalid.');
 		$this->addRule(__CLASS__ . '::validateDateOld', 'Date is too old.');

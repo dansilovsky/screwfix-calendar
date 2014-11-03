@@ -55,6 +55,14 @@ class HolidayCreditsTest extends \Tester\TestCase {
 		
 		Assert::same(7, $obj->getBorderYearsNumber());
 	}
+	
+	function testGetUserCredits()
+	{
+		$mSettings = m::mock('Screwfix\Settings')->shouldReceive('get')->with('holiday.credits')->andReturn([0 => 23, 2 => 24, 4 => 25, 6 => 26])->getMock();
+		$mDateFactory = m::mock('Screwfix\DateTimeFactory');
+		
+		$obj = new HolidayCredits($mSettings, $mDateFactory);
+	}
 
 }
 

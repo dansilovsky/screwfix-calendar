@@ -36,6 +36,9 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	 */
 	protected $userFacade;
 	
+	/** @var \Screwfix\UserFacadeFactory @inject */
+	public $userFacadeFactory;
+	
 	/**
 	 * @var PatternFacade 
 	 */
@@ -71,6 +74,9 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	 */
 	protected $bankHolidayFacade;
 	
+	/** @var \Screwfix\BankHolidayFacadeFactory @inject */
+	public $bankHolidayFacadeFactory;
+	
 	/** @var \Screwfix\Settings @inject **/
 	public $settings;
 	
@@ -95,6 +101,9 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	/** @var \Screwfix\CalendarIntervalFactory @inject **/
 	public $calendarIntervalFactory;
 	
+	/** @var \Screwfix\HolidayCredits @inject */
+	public $holidayCredits;
+	
 	/**
 	 * Date in format mm-dd from when holiday year starts.
 	 * eg. '04-01'
@@ -102,260 +111,14 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	 */
 	private $_holidayYearStart;
 	
-	/** @var integer */
+	/** 
+	 * Users holiday credits + bank holidays on which is user actually off work
+	 * @var integer 
+	 */
 	private $_holidayTotalCredits;
 
 	protected function startup()
-        {
-		
-//		$date = new \Nette\DateTime();
-//		
-//		$date->setTimestamp(0);
-//		echo $date->format('Y-m-d D'), '<br>';
-//		
-//		$date->setTimestamp(ShiftPatternDate::START);		
-//		echo $date->format('Y-m-d D'), '<br>';
-//		$date->setTimestamp(ShiftPatternDate::START + ShiftPatternDate::DAY);		
-//		echo $date->format('Y-m-d D'), '<br>';
-//		
-//		$date->setTimestamp(ShiftPatternDate::START);
-//		
-//		
-//		$date->setDate(1970,1,5);
-//		$date->setTime(0, 0, 0);
-//		echo $date->format('Y-m-d H:i:s D --- U'), '<br>';
-//		
-//		for ($i=0; $i<100; $i++)
-//		{
-//			$ts = ShiftPatternDate::START + (ShiftPatternDate::WEEK * $i);
-//			$date->setTimestamp($ts);
-//			echo $i, ') ', $date->format('r --- U'), '<br>';
-//			
-//			
-//		}exit;
-//
-//		
-//		
-//		$iterator = new CalendarMonthPeriod('1970/02/01', 12);
-//		
-//		$ShiftPatternDate = new ShiftPatternDate();
-//		$ShiftPatternDate->set('2014-05-20 00:00:00');
-//		$week = $ShiftPatternDate->week(6);
-//		echo "<br>------!!!------<br><pre>";
-//		var_dump($week);
-//		exit;
-//		echo "</pre><br>------!!!------<br>";
-//		$patternArray = array(//weeks			
-//			0 => array(//days
-//				0 => array('15:00', '23:00'),
-//				1 => array('15:00', '23:00'),
-//				2 => array('15:00', '23:00'),
-//				3 => array('15:00', '23:00'),
-//				4 => array('15:00', '23:00'),
-//				5 => NULL,
-//				6 => NULL,
-//			),
-//			1 => array(//days
-//				0 => array('07:00', '15:00'),
-//				1 => array('07:00', '15:00'),
-//				2 => array('07:00', '15:00'),
-//				3 => array('07:00', '15:00'),
-//				4 => array('07:00', '15:00'),
-//				5 => NULL,
-//				6 => array('09:30', '17:30'),
-//			),
-//			2 => array(//days
-//				0 => array('15:00', '23:00'),
-//				1 => array('15:00', '23:00'),
-//				2 => array('15:00', '23:00'),
-//				3 => array('15:00', '23:00'),
-//				4 => NULL,
-//				5 => NULL,
-//				6 => NULL,
-//				
-//			),
-//			3 => array(//days
-//				0 => array('07:00', '15:00'),
-//				1 => array('07:00', '15:00'),
-//				2 => array('07:00', '15:00'),
-//				3 => array('07:00', '15:00'),
-//				4 => array('07:00', '15:00'),
-//				5 => NULL,
-//				6 => NULL,
-//			),
-//			4 => array(//days
-//				0 => array('15:00', '23:00'),
-//				1 => array('15:00', '23:00'),
-//				2 => array('15:00', '23:00'),
-//				3 => array('15:00', '23:00'),
-//				4 => array('15:00', '23:00'),
-//				5 => NULL,
-//				6 => array('09:30', '17:30'),
-//				
-//			),
-//			5 => array(//days
-//				0 => array('07:00', '15:00'),
-//				1 => array('07:00', '15:00'),
-//				2 => array('07:00', '15:00'),
-//				3 => array('07:00', '15:00'),
-//				4 => NULL,
-//				5 => NULL,
-//				6 => NULL,
-//			),
-//		);
-//		$shiftPattern = new ShiftPatternFilter(new ShiftPatternDate);
-//		$shiftPattern->setPattern($patternArray);
-//		
-//		$bankHolidaysArr = array(
-//			'1970-08-05' => 'Summer bh.',
-//			'1970-12-25' => 'Another bh.'
-//		);
-//		
-//		$bankHoliday = new BankHolidayFilter($bankHolidaysArr);
-//		
-//		$sysNote = new SysNoteFilter($this->context->sysNoteRepository->notesBetween('1970-01-01', '1971-01-01'));
-//		
-//		$calendarData = new CalendarData($iterator);
-//		$calendarData->addFilter($shiftPattern)
-//			->addFilter($sysNote)
-//			->addFilter($bankHoliday)
-//			->build();
-//		
-//		foreach ($calendarData as $key => $val)
-//		{
-//			echo $key.' ';
-//			echo '<br>timestamp: ' . $val->getTimestamp();
-//			echo '<br>' . $val->format('D');
-//			\Nette\Diagnostics\Debugger::dump($val);
-//			echo '<br>';
-//		}
-//		
-//		exit;
-		
-		// green team 1
-		$patternArray = array(//weeks			
-			0 => array(//days
-				0 => array('15:00', '23:00'),
-				1 => array('15:00', '23:00'),
-				2 => array('15:00', '23:00'),
-				3 => array('15:00', '23:00'),
-				4 => array('15:00', '23:00'),
-				5 => NULL,
-				6 => NULL,
-			),
-			1 => array(//days
-				0 => array('07:00', '15:00'),
-				1 => array('07:00', '15:00'),
-				2 => array('07:00', '15:00'),
-				3 => array('07:00', '15:00'),
-				4 => array('07:00', '15:00'),
-				5 => NULL,
-				6 => array('09:30', '17:30'),
-			),
-			2 => array(//days
-				0 => array('15:00', '23:00'),
-				1 => array('15:00', '23:00'),
-				2 => array('15:00', '23:00'),
-				3 => array('15:00', '23:00'),
-				4 => NULL,
-				5 => NULL,
-				6 => NULL,
-				
-			),
-			3 => array(//days
-				0 => array('07:00', '15:00'),
-				1 => array('07:00', '15:00'),
-				2 => array('07:00', '15:00'),
-				3 => array('07:00', '15:00'),
-				4 => array('07:00', '15:00'),
-				5 => NULL,
-				6 => NULL,
-			),
-			4 => array(//days
-				0 => array('15:00', '23:00'),
-				1 => array('15:00', '23:00'),
-				2 => array('15:00', '23:00'),
-				3 => array('15:00', '23:00'),
-				4 => array('15:00', '23:00'),
-				5 => NULL,
-				6 => array('09:30', '17:30'),
-				
-			),
-			5 => array(//days
-				0 => array('07:00', '15:00'),
-				1 => array('07:00', '15:00'),
-				2 => array('07:00', '15:00'),
-				3 => array('07:00', '15:00'),
-				4 => NULL,
-				5 => NULL,
-				6 => NULL,
-			),
-		);
-		
-//		// red team 4
-//		$patternArray = array(//weeks			
-//			0 => array(//days
-//				0 => array('07:00','15:00'),
-//				1 => array('07:00','15:00'),
-//				2 => array('07:00','15:00'),
-//				3 => array('07:00','15:00'),
-//				4 => array('07:00','15:00'),
-//				5 => NULL,
-//				6 => NULL,
-//			),
-//			1 => array(//days
-//				0 => array('15:00','23:00'),
-//				1 => array('15:00','23:00'),
-//				2 => array('15:00','23:00'),
-//				3 => array('15:00','23:00'),
-//				4 => array('15:00','23:00'),
-//				5 => NULL,
-//				6 => array('09:30', '17:30'),
-//			),
-//			2 => array(//days
-//				0 => array('07:00','15:00'),
-//				1 => array('07:00','15:00'),
-//				2 => array('07:00','15:00'),
-//				3 => array('07:00','15:00'),
-//				4 => NULL,
-//				5 => NULL,
-//				6 => NULL,
-//				
-//			),
-//			3 => array(//days
-//				0 => array('15:00','23:00'),
-//				1 => array('15:00','23:00'),
-//				2 => array('15:00','23:00'),
-//				3 => array('15:00','23:00'),
-//				4 => array('15:00','23:00'),
-//				5 => NULL,
-//				6 => NULL,
-//			),
-//			4 => array(//days
-//				0 => array('07:00','15:00'),
-//				1 => array('07:00','15:00'),
-//				2 => array('07:00','15:00'),
-//				3 => array('07:00','15:00'),
-//				4 => array('07:00','15:00'),
-//				5 => NULL,
-//				6 => array('09:30', '17:30'),
-//				
-//			),
-//			5 => array(//days
-//				0 => array('15:00','23:00'),
-//				1 => array('15:00','23:00'),
-//				2 => array('15:00','23:00'),
-//				3 => array('15:00','23:00'),
-//				4 => NULL,
-//				5 => NULL,
-//				6 => NULL,
-//			),
-//		);
-//		
-//		$shiftPattern = new ShiftPatternFilter(new ShiftPatternDate);
-//		$shiftPattern->setPattern($patternArray);
-		
-		
+        {		
                 parent::startup();
 		
 		// cookies setup
@@ -408,7 +171,7 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	
 	public function setHolidayTotalCredits()
 	{
-		$this->_holidayTotalCredits = $this->settings->get('holiday.credits');
+		$this->_holidayTotalCredits = $this->holidayCredits->getUserCredits($this->user, $this->userFacadeFactory, $this->bankHolidayFacadeFactory);
 	}
 	
 	/**

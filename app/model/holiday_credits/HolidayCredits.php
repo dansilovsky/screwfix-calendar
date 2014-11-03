@@ -15,18 +15,26 @@ class HolidayCredits {
 	/** @var array */
 	private $credits;
 	
+	/** @var string */
+	private $holidayYearStart;
+	
 	/**  @var DateTimeFactory */
 	private $dateFactory;
+	
+	/** @var ReachIterator */
+	private $iterator;
 	
 	/** @var integer */
 	private $borderYearsNumber;
 
 
 
-	public function __construct(Settings $settings, DateTimeFactory $dateFactory)
+	public function __construct(Settings $settings, DateTimeFactory $dateFactory, ReachIterator $iterator)
 	{
 		$this->credits = $settings->get('holiday.credits');
+		$this->holidayYearStart = $settings->get('holiday.yearStart');
 		$this->dateFactory = $dateFactory;
+		$this->iterator = $iterator->setArray($this->credits);
 	}
 
 	
@@ -41,12 +49,6 @@ class HolidayCredits {
 		$selection['date'] = "Less than " . $this->pluralizeYear($borderYearsNumber);
 
 		return $selection;
-	}
-	
-	
-	public function workOutPostCredits()
-	{
-		
 	}
 	
 
@@ -82,6 +84,55 @@ class HolidayCredits {
 		}
 		
 		return $this->borderYearsNumber;
+	}
+	
+	public function getUserCredits(\Nette\Security\User $user, UserFacadeFactory $userFacadeFactory, BankHolidayFacadeFactory $bankholidayFacadeFactory)
+	{
+		if (!$user->isLoggedIn())
+		{
+			return 0;
+		}
 		
+		$identity = $user->getIdentity();
+		
+		$userFacade = $userFacadeFactory->create();
+		$bankholidayFacade = $bankholidayFacadeFactory->create();		
+		
+		list($type, $value) = explode(':', $identity->credits);
+		
+		$holidayYearStartDate = $this->dateFactory->create()->setTime(0, 0, 0);
+		$dateString = $holidayYearStartDate->format('Y') . '-' . $this->holidayYearStart;
+		$holidayYearStartDate->modify($dateString);
+		
+		$holidayYearEndDate = $holidayYearStartDate->cloneMe()->addYear();
+		
+		$bankHolidayCredits = count($bankholidayFacade->bankHolidays($holidayYearStartDate, $holidayYearEndDate));		
+		
+		if ($value === 'full')
+		{
+			return (int) end($this->credits) + $bankHolidayCredits;
+		}		
+		
+		$employmentStart = $this->dateFactory->create($value)->setTime(0, 0, 0);
+		
+		$diff = $employmentStart->diff($holidayYearStartDate)->format('%y');
+		
+		foreach ($this->iterator as $yearsNumber => $credits)
+		{
+			$yearsNumberNext = $this->iterator->reachNextKey();
+			
+			if ($this->iterator->isLast())
+			{
+				if ($diff >= $yearsNumber)
+				{
+					return (int) $credits + $bankHolidayCredits;
+				}
+			}
+			
+			if ($diff >= $yearsNumber && $diff < $yearsNumberNext)
+			{
+				return (int) $credits  + $bankHolidayCredits;
+			}
+		}
 	}
 }

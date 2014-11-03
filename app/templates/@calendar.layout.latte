@@ -198,7 +198,8 @@
 		},
 		// TODO: zajisti aby se tato informace tahala z db ne pouze staticky z sablony
 		holidays: {
-			years: []
+			years: {},
+			yearsMap: []
 		},		
 		calendarDaysData: [
 		{foreach $calendarData as $day}
@@ -218,10 +219,11 @@
 			}{sep},{/sep}
 		{/foreach}
 		]
-	};	
-	Screwfix.holidays.years[2013] = { credits: 33, debits: 33, from: '2013-04-01', to: '2014-03-31'};
+	};
 	Screwfix.holidays.years[2014] = { credits: 33, debits: 0, from: '2014-04-01', to: '2015-03-31'};
 	Screwfix.holidays.years[2015] = { credits: 33, debits: 0, from: '2015-04-01', to: '2016-03-31'};
+	Screwfix.holidays.yearsMap.push(2014);
+	Screwfix.holidays.yearsMap.push(2015);
 </script>
 <script type="text/javascript" src="{$basePath}/js/common.js"></script>
 <script type="text/javascript" src="{$basePath}/js/calendar.js"></script>
