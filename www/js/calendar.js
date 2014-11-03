@@ -168,6 +168,7 @@
 	 * Manages selecting of cells
 	 * @trigger started()             selection started
 	 * @trigger added(selection)      cell added to selection
+	 * @trigger changed(selection)    cursor moved to new cell in selecting mode
 	 * @trigger selected(selection)   selection ended
 	 * @param {jQuery} $selector  
 	 * @param {array}  cells      array of all cells(jQuery objects) in a grid
@@ -220,13 +221,13 @@
 
 					S.startCell = cell.order;
 					S.endCell = cell.order;
-
-					S.select();
-
+					
 					// show selection info
-					if (S.settings.showInfo) {					
+					if (S.settings.showInfo) {
 						S.activateInfo(event);
 					}
+					
+					S.select();
 				}
 			});
 			
@@ -241,7 +242,7 @@
 		S.select = function() {
 			var checkIsSelectable = S.settings.checkIsSelectable.callback;
 			var context = S.settings.checkIsSelectable.context;
-			
+			console.log('startCell = ' + S.startCell + ' endCell = ' + S.endCell)
 			var check = S.startCell - S.endCell;
 			
 			S.selection = [];
@@ -253,13 +254,18 @@
 			
 			if (check === 0) {
 				tempSelection.push(S.cells[S.startCell]);
+				console.log('check === 0')
 			}
 			else if (check < 0) {
+				
+				console.log('check < 0')
 				for (var i=S.startCell; i<=S.endCell; i++) {
 					tempSelection.push(S.cells[i]);
 				}
 			}
 			else {
+				
+				console.log('check > 0')
 				for (var i=S.startCell; i>=S.endCell; i--) {
 					tempSelection.push(S.cells[i]);
 				}
@@ -287,6 +293,10 @@
 				// trigger new cell added. !must be triggered afeter all selection is done
 				S.that.trigger('added', S.selection);
 			}
+			
+			// trigger changed, the cursor moved to new cell
+			S.that.trigger('changed', S.selection);
+
 		};
 		
 		S.activateInfo = function(event) {
@@ -298,7 +308,7 @@
 			if (S.settings.info.callback) {
 				// append result of info callback function
 				S.that.appendInfo(S.selection);
-				S.that.on('added', S.that.appendInfo, S.that.settings);				
+				S.that.on('changed', S.that.appendInfo)
 			}
 			
 			var infoArgs = {
@@ -323,7 +333,7 @@
 			S.$selectionInfo.remove();
 			S.$selectionInfo = null;
 			S.$selector.unbind('mousemove');
-			S.that.off('added', S.that.appendInfo, S.that.settings);
+			S.that.off('changed', S.that.appendInfo);
 		};
 		
 		/**
@@ -558,20 +568,42 @@
 	 * Manages holidays.
 	 * @param {array} holidaysYears
 	 */
-	var HolidaysManager = function(holidaysYears) {
+	var HolidaysManager = function(holidays) {
 		
 		var H = {
 			that: this,
-			years: holidaysYears
+			years: holidays.years,
+			yearsMap: holidays.yearsMap,
+			span: null
 		};
 		
 		return {
+			/**
+			 * Returns the whole holidays span. 
+			 * Where first day of holidays is start and last day of holidays is end.
+			 * 
+			 * @returns hash eg. {start: '2014-04-01', end: '2016-03-31'}
+			 */
+			getSpan: function() {
+				if (H.span === null) {
+					var firstY = H.yearsMap[0];
+					var lastY = H.yearsMap[H.yearsMap.length - 1];
+
+					H.span = {
+						start: H.years[firstY].from,
+						end: H.years[lastY].to
+					};
+				}
+				
+				return H.span;
+			},
+			
 			/**
 			* Determines holiday year from given date
 			* @param {string} date eg. '2014-05-08'
 			* @returns {int} holiday year
 			*/
-		       determineHolidayYear: function(date) {
+			determineHolidayYear: function(date) {
 			       var year = parseInt(date.substring(0, 4));
 
 			       if (H.years[year] && date >= H.years[year].from && date <= H.years[year].to) {
@@ -585,9 +617,9 @@
 				       return --year;
 			       }
 			       else {
-				       throw 'Holiday year is not defined for given date.';
+				       false;
 			       }
-		       },
+			},
 		       
 			/**
 			 * Buils object and returns object holidays info from selection.
@@ -855,7 +887,7 @@
 		buildDays: function(range) {
 			var dateRunner = new Zidane.Calendar();			
 			var today = dateRunner.today().toString();
-			dateRunner.setFromStr(range.start);			
+			dateRunner.setFromStr(range.start);		
 			var days = [];
 			var loop;
 			while (dateRunner.toString() <= range.end) {
@@ -941,7 +973,7 @@
 			this.mode = AppView.MODE_NOTES,
 			this.user = new Zidane.User(this.screwfix.user, new Zidane.Acl(this.screwfix.acl.roles));
 			
-			this.holidaysManager = new HolidaysManager(this.screwfix.holidays.years);
+			this.holidaysManager = new HolidaysManager(this.screwfix.holidays);
 			
 			this.calendar = new CalendarView({master: this});
 			
@@ -990,7 +1022,7 @@
 			this.navigatorView = new NavigatorView({model: this.navigatorModel, master: this.master, parent: this});
 			
 			// view tools
-			this.toolsView = new ToolsView({master: this.master, parent: this});
+			this.toolsView = new ToolsView({master: this.master, parent: this, holidaysManager: this.holidaysManager});
 			
 			// view month
 			this.monthView = new MonthView({collection: this.calendarDayCollection, master: this.master, parent: this});
@@ -1006,6 +1038,8 @@
 			this.on('change:week:next', this.dateNavigator.nextWeek, this.dateNavigator);
 			this.on('change:week', this.navigatorView.changeWeekDate, this.navigatorView);
 			this.on('change:week', this.monthView.changeMonth, this.monthView);
+			
+			this.on('change', this.toolsView.hideShowHolidays, this.toolsView);
 			
 			this.toolsView.on(
 				'holidayson', 
@@ -1085,7 +1119,8 @@
 				this.trigger('change:month:prev:week', {dateNavigator: this.dateNavigator});
 			}
 			
-			this.trigger('change:month', {dateNavigator: this.dateNavigator});
+			this.trigger('change:month', {dateNavigator: this.dateNavigator});			
+			this.trigger('change', {dateNavigator: this.dateNavigator});
 			
 			return this;
 		},
@@ -1098,7 +1133,8 @@
 				this.trigger('change:month:next:week', {dateNavigator: this.dateNavigator});
 			}
 			
-			this.trigger('change:month', {dateNavigator: this.dateNavigator});
+			this.trigger('change:month', {dateNavigator: this.dateNavigator});			
+			this.trigger('change', {dateNavigator: this.dateNavigator});
 			
 			return this;
 		},
@@ -1106,6 +1142,7 @@
 		prevWeek: function() {
 			this.trigger('change:week:prev', {dateNavigator: this.dateNavigator});
 			this.trigger('change:week', {dateNavigator: this.dateNavigator});
+			this.trigger('change', {dateNavigator: this.dateNavigator});
 			
 			return this;
 		},
@@ -1113,13 +1150,13 @@
 		nextWeek: function() {			
 			this.trigger('change:week:next', {dateNavigator: this.dateNavigator});
 			this.trigger('change:week', {dateNavigator: this.dateNavigator});
+			this.trigger('change', {dateNavigator: this.dateNavigator});
 			
 			return this;
 		},		
 		
 		holidaysSelectionInfo: function(selection) {
 			var info = this.holidaysManager.getSelectionInfo(selection, this.master.mode);
-			
 			var template = appGlobal.templates.holidaysSelectionInfo;
 			
 			return template(info);
@@ -1218,11 +1255,14 @@
 		tagName: 'div',
 		id: 'calendarTools',
 		className: "switcher",
-		template: appGlobal.templates.toolsView,
+		template: appGlobal.templates.toolsView,		
+		isHolidaysHidden: false,
 		
 		initialize: function(options) {
 			// parent is CalendarView
-			this.parent = options.parent;
+			this.parent = options.parent
+			
+			this.holidaysManager = options.holidaysManager;
 			
 			this.render();
 		},
@@ -1254,10 +1294,33 @@
 					that.trigger('switched', mode);
 				}
 			});
+			
+			this.$notes = this.$el.children("a[id='mode:notes']");
+			this.$holidays = this.$el.children("a[id='mode:holidays'], a[id='mode:halfdayHolidays']");
 		},
 		
 		preventDefault: function(e) {
 			e.preventDefault();
+		},
+		
+		hideShowHolidays: function(o) {
+			var currRange = o.dateNavigator.currentRange();
+			if(
+				this.holidaysManager.determineHolidayYear(currRange.start) 
+				|| this.holidaysManager.determineHolidayYear(currRange.end)
+			) {
+				if (this.isHolidaysHidden){
+					this.$holidays.css('display', 'inline-block');
+					this.isHolidaysHidden = false;
+				}
+			}
+			else {
+				if (!this.isHolidaysHidden) {
+					this.$holidays.css('display', 'none');
+					this.isHolidaysHidden = true;
+					this.$notes.click();
+				}
+			}
 		}
 	});
 	
@@ -1286,6 +1349,8 @@
 			});
 			
 			this.selectionMode = false;
+			
+			this.holidaysSpan = this.master.holidaysManager.getSpan();
 			
 			this.dateNavigator = this.parent.dateNavigator;
 			
@@ -1319,7 +1384,7 @@
 			// use fragment to avoid unnecessary browser DOM reflows viz. http://ozkatz.github.io/avoiding-common-backbonejs-pitfalls.html
 			var fragment = document.createDocumentFragment();
 			var models = this.collection.filterByDateRange(dateNavigator.currentRange());
-
+			
 			_.each(models, function(item) {
 				var dayView = new DayView({
 					model: item,
@@ -1358,7 +1423,15 @@
 				this.$el, 
 				this.dayViews, 
 				{
-					info: {callback: this.parent.holidaysSelectionInfo, context: this.parent}
+					info: {callback: this.parent.holidaysSelectionInfo, context: this.parent},
+					checkIsSelectable: {
+						callback: function(i, tempSelection) {
+							var day = tempSelection[i].model.id;
+
+							return this.holidaysSpan.start <= day && day <= this.holidaysSpan.end;
+						}, 
+						context: this
+					}
 				}
 			);
 			
@@ -1381,7 +1454,7 @@
 				function(selection) {
 					var mode = this.master.mode;
 					
-					if (mode === AppView.MODE_HOLIDAYS || mode === AppView.MODE_HALFDAY_HOLIDAYS && selection.length) {
+					if ((mode === AppView.MODE_HOLIDAYS || mode === AppView.MODE_HALFDAY_HOLIDAYS) && selection.length) {
 						new HolidaysFormView({
 							master: this.master,
 							parent: this,
