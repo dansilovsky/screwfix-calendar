@@ -2074,7 +2074,7 @@
 			this.master = options.master;
 			// MonthView
 			this.parent = options.parent;
-			this.selection = options.selection;
+			this.selection = _.first(options.selection).model.id > _.last(options.selection).model.id ? options.selection.reverse() : options.selection;
 			this.mode = options.mode;
 			this.holidaysManager = this.master.holidaysManager;
 			this.user = this.master.user;
