@@ -605,13 +605,19 @@
 	* Function creates new element and wraps it in jQuery object
 	* @param  string   el           name of element
 	* @param  string   className    name of class
+	* @param  hash     attr         
 	* @return  object               element given by parameter wrapped in jQuery object
 	*/
-	Zidane.create = function(el, className) {
+	Zidane.create = function(el, className, attrs) {
 		var $el = $(document.createElement(el));
 		if (className) {
 			$el.addClass(className);
 		}
+		
+		if (attrs) {
+			$el.attr(attrs);
+		}
+		
 		return $el;
 	}
 
