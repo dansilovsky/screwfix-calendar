@@ -106,15 +106,20 @@
 <script type="text/javascript" src="{$basePath}/js/underscore-dev-1.7.0.js"></script>
 <script type="text/javascript" src="{$basePath}/js/backbone-dev-1.1.2.js"></script>
 <script type="text/javascript" src="{$basePath}/js/zidane.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" n:syntax="asp" >
 	var Screwfix = {		
 		acl: {
-			roles: {$acl->getRoles()}
+			roles:<%$acl->getRoles()%>
 		},
 		user: {
-			{var roles = $user->getRoles()}
-			role: {$roles[0]}
+			<%var roles = $user->getRoles()%>
+			role:<%$roles[0]%>
 		},
+		patterns: {
+		<%foreach $patterns as $id => $pattern%>
+			<%$id%>:<%$pattern|noescape%><%sep%>,<%/sep%>
+		<%/foreach%>
+		}
 	};
 </script>
 <script type="text/javascript" src="{$basePath}/js/common.js"></script>

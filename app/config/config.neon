@@ -61,6 +61,16 @@ common:
 		patternFacade: Screwfix\PatternFacade
 		patternFacadeFactory: Screwfix\PatternFacadeFactory
 
+		sysPatternRepository: Screwfix\SysPatternRepository
+		sysPatternRepositoryFactory: Screwfix\SysPatternRepositoryFactory
+		sysPatternFacade: Screwfix\SysPatternFacade
+		sysPatternFacadeFactory: Screwfix\SysPatternFacadeFactory
+
+		customPatternRepository: Screwfix\CustomPatternRepository
+		customPatternRepositoryFactory: Screwfix\CustomPatternRepositoryFactory
+		customPatternFacade: Screwfix\CustomPatternFacade
+		customPatternFacadeFactory: Screwfix\CustomPatternFacadeFactory
+
 		teamRepository: Screwfix\TeamRepository
 		teamRepositoryFactory: Screwfix\TeamRepositoryFactory
 		teamFacade: Screwfix\TeamFacade
@@ -70,9 +80,6 @@ common:
 		shiftRepositoryFactory: Screwfix\ShiftRepositoryFactory
 		shiftFacade: Screwfix\ShiftFacade
 		shiftFacadeFactory: Screwfix\ShiftFacadeFactory
-
-		sysPatternRepository: Screwfix\SysPatternRepository
-		sysPatternFacade: Screwfix\SysPatternFacade
 	
 		userRepository: Screwfix\UserRepository
 		userRepositoryFactory: Screwfix\UserRepositoryFactory

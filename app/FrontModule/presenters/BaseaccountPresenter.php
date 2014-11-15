@@ -28,6 +28,25 @@ abstract class BaseaccountPresenter extends BasePresenter {
 	/** @var \Screwfix\ShiftPatternFilterFactory @inject */
 	public $shiftPatternFilterFactory;
 	
+	public function beforeRender()
+	{
+		parent::beforeRender();
+		
+		$patterns = $this->sysPatternFacadeFactory->create()->getTemplateHash();
+		
+		if ($this->user->isLoggedIn())
+		{
+			$customPattern = $this->patternFacadeFactory->create()->getCustomPatternTemplateHash($this->identity->id);
+			
+			if ($customPattern !== null)
+			{
+				$patterns = $customPattern + $patterns;
+			}
+		}
+		
+		$this->template->patterns = $patterns;
+	}
+	
 	/**
 	 * Builds default input pattern value array from pattern array.
 	 * 

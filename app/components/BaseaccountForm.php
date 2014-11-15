@@ -13,7 +13,7 @@ class BaseaccountForm extends \Nette\Application\UI\Form {
 	
 	private $_name = 'baseaccountForm';
 
-	public function __construct(\Nette\ComponentModel\IContainer $parent = NULL, $name = NULL)
+	public function __construct(\Nette\ComponentModel\IContainer $parent = null, $name = null)
 	{
 		parent::__construct($parent, $name);
 		
@@ -23,5 +23,16 @@ class BaseaccountForm extends \Nette\Application\UI\Form {
 	public function getName()
 	{
 		return $this->_name;
+	}
+	
+	public function addPatternSelect($name, $label = null, array $items = null, $size = null)
+	{		
+		$control = new PatternSelectBox($label, $items);
+		
+		if ($size > 1) {
+			$control->setAttribute('size', (int) $size);
+		}
+		
+		return $this[$name] = $control;
 	}
 }

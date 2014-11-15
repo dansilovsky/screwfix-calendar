@@ -38,13 +38,13 @@
 			this.parent = options.parent;
 			
 			var el = this.$el.find('#formEmployment')[0];
-			this.employmentView = new EmploymentView({el: el, master: this.master, parent: this});
-			
-			el = this.$el.find(this.master.formIdSelector + '-sysPatternSelect')[0];
-			this.patternSelectorView = new PatternSelectorView({el: el, master: this.master, parent: this});
+			this.employmentView = new EmploymentView({el: el, master: this.master, parent: this});			
 			
 			el = this.$el.find(this.master.formIdSelector + '-patternInput')[0];
 			this.patternInputView = new PatternInputView({el: el, master: this.master, parent: this});
+			
+			el = this.$el.find('#formPatternSelector')[0];
+			this.patternSelectorView = new PatternSelectorView({el: el, patternInputView: this.patternInputView, master: this.master, parent: this});
 		},
 		
 		events: {
@@ -137,20 +137,90 @@
 	var PatternSelectorView = Backbone.View.extend({
 		
 		initialize: function(options) {
+			var that = this;
+			
 			// AppView
 			this.master = options.master;
+			
 			// FormView
 			this.parent = options.parent;
-		},
-		
-		events: {
-			"change" : "change"
+			
+			this.patternInputView = options.patternInputView;
+			
+			this.$team = this.$el.find(this.master.formIdSelector + '-sysPatternTeamSelect');
+			
+			this.$shift = this.$el.find(this.master.formIdSelector + '-sysPatternShiftSelect');
+			
+			this.prevTeamVal = this.$team.val();
+			this.prevShiftVal = this.$shift.val();
+			
+			this.$team.change(change);
+			this.$shift.change(change);
+			
+			function change() {
+				that.change(); 
+			}
+			
+			this.$teamOptionCustom = this.$team.children("option[value='0']");
+			this.$shiftOptionCustom = this.$shift.children("option[value='0']");
 		},
 		
 		change: function() {
-			var pattern = this.$el.val();
-			pattern = $.parseJSON(pattern);
-			this.parent.patternInputView.changeOverview(pattern);
+			var teamId = this.$team.val();
+			var shiftId = this.$shift.val();
+			
+			if (this.prevTeamVal != 0 && this.prevShiftVal != 0) {
+				if (teamId == 0) {
+					this.$shift.children("option[value='0']").prop('selected', true);
+				}
+				
+				if (shiftId == 0) {
+					this.$team.children("option[value='0']").prop('selected', true);
+				}
+			}
+			else if (this.prevTeamVal == 0 && this.prevShiftVal == 0) {
+				if (teamId > 0) {
+					this.$shift.children("option[value='1']").prop('selected', true);
+				}
+				
+				if (shiftId > 0) {
+					this.$team.children("option[value='1']").prop('selected', true);
+				}
+			}
+				
+			this.unsetOptionCustom();			
+			
+			this.prevTeamVal = teamId = this.$team.val();
+			this.prevShiftVal = shiftId = this.$shift.val();
+			
+			var id = teamId == 0 || shiftId == 0 ? '0:0' : teamId + ':' + shiftId;
+			
+			this.patternInputView.changeOverview(id);
+		},
+		
+		setOptionCustom: function() {
+			if (this.$teamOptionCustom.length === 0) {
+				this.$teamOptionCustom = Zidane.create('option', null, {value: '0'}).text('Custom');
+				this.$shiftOptionCustom = Zidane.create('option', null, {value: '0'}).text('Custom');
+
+				this.$team.prepend(this.$teamOptionCustom);
+				this.$shift.prepend(this.$shiftOptionCustom);
+			}
+			
+			this.$teamOptionCustom.prop('selected', true);
+			this.$shiftOptionCustom.prop('selected', true);
+			
+			this.prevTeamVal = '0';
+			this.prevShiftVal = '0';
+		},
+		
+		unsetOptionCustom: function() {
+			if (_.isUndefined(this.screwfix.patterns['0:0'])) {
+				this.$teamOptionCustom.remove();
+				this.$shiftOptionCustom.remove();
+				
+				this.$teamOptionCustom = $();
+			}
 		}
 	});
 	
@@ -165,10 +235,20 @@
 			this.patternInputOverviewView = new PatternInputOverviewView({el: this.el, master: this.master, parent: this});
 			
 			this.patternInputEditView = new PatternInputEditView({el: this.el, master: this.master, parent: this});
+			
+			this.patterns = options.patterns;
 		},
 		
-		changeOverview: function(pattern) {
-			this.patternInputOverviewView.change(pattern);
+		/**
+		 * @param {string} id id of pattern eg '2:1'
+		 */
+		changeOverview: function(id) {			
+			if (_.isUndefined(this.screwfix.patterns[id])) {
+				// do nothing
+				return;
+			}
+			
+			this.patternInputOverviewView.change(this.screwfix.patterns[id]);
 		},
 		
 		/**
@@ -198,6 +278,9 @@
 			"click input[name='customize']": "customize"
 		},
 		
+		/**
+		 * @param {array} pattern
+		 */
 		render: function(pattern) {
 			var date = this.master.date.clone();
 			date.today().startWeek();
@@ -222,7 +305,7 @@
 		},
 		
 		/**
-		 * Changes overvie by given pattern.
+		 * Changes overview by given pattern.
 		 * @param {array} pattern raw unadjusted pattern
 		 * @returns {this}
 		 */
@@ -296,6 +379,7 @@
 			this.$el.find("td.day").each(function(i) {
 				var day = new PatternDayView({el: this, master: that.master, parent: that, data: that.daysData[i]});
 				that.days.push(day);
+				that.listenTo(day, 'changed', that.changed);
 			});
 			
 			this.afterRender();			
@@ -370,6 +454,8 @@
 			
 			this.render(pattern);
 			
+			this.changed();
+			
 			return this;
 		},
 		
@@ -383,10 +469,19 @@
 			
 			this.render(pattern);
 			
+			this.changed();
+			
 			return this;
+		},
+		
+		changed: function() {
+			this.master.formView.patternSelectorView.setOptionCustom();
 		}
 	});
 	
+	/**
+	 * @trigger changed() when new time is selected or changed state of day view
+	 */
 	var PatternDayView = Backbone.View.extend({
 		templateIn: appGlobal.templates.formPatternInputDayIn,
 		templateOff: appGlobal.templates.formPatternInputDayOff,
@@ -454,6 +549,8 @@
 				this.renderOff();
 			}
 			
+			this.trigger('changed');
+			console.log(this.cid + ': DayView fired changed')
 			return this;
 		},
 		
@@ -470,6 +567,9 @@
 			else {
 				this.times = 'off';
 			}
+			
+			this.trigger('changed');
+			console.log(this.cid + ': DayView fired changed')
 			
 			return this;
 		},
@@ -523,5 +623,3 @@
 	var app = new AppView();
 	
 }(jQuery));
-
-

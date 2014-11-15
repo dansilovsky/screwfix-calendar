@@ -188,19 +188,56 @@ class AccountPresenter extends BaseaccountPresenter {
 	
 	protected function createComponentSetupForm() 
 	{
-		$userPatternSelection = $this->patternFacade->getFormSelection($this->identity->id);
+		$userPatternRow = $this->patternFacadeFactory->create()->getUserPattern($this->identity->id);
 		
-		$sysPatternSelection = $this->sysPatternFacade->getFormSelection();
-		
-		// if users pattern equals to any of sys patterns then the equal sys pattern is left out
-		$patternSelection = $userPatternSelection + $sysPatternSelection;
+		$userSysPatternRow = $userPatternRow->ref('sys_pattern', 'sys_pattern_id');
 		
 		$form = new BaseaccountForm($this, 'setupForm');
 		
-		$form->addSelect('sysPatternSelect', 'Select pattern', $patternSelection);
 		
-		reset($patternSelection);
-		$defaultPattern = $this->buildDefaultInputPattern(\Nette\Utils\Json::decode(key($patternSelection)));
+		// Team select
+		$sysPatternTeamSelection = $this->teamFacadeFactory->create()->getFormSelection();
+		
+		$defaultVal = $userSysPatternRow !== null ? $userSysPatternRow->team_id : 0;
+		
+		if ($defaultVal === 0)
+		{
+			$defaultValArr = [0 => 'Custom'];
+			
+			$sysPatternTeamSelection = $defaultValArr + $sysPatternTeamSelection;
+		}
+		
+		$form->addSelect('sysPatternTeamSelect', 'Select your team', $sysPatternTeamSelection)
+			->setDefaultValue($defaultVal);
+		
+		
+		// Shift select
+		$sysPatternShiftSelection = $this->shiftFacadeFactory->create()->getFormSelection();
+		
+		$defaultVal = $userSysPatternRow !== null ? $userSysPatternRow->shift_id : 0;
+		
+		if ($defaultVal === 0)
+		{
+			$defaultValArr = [0 => 'Custom'];
+			
+			$sysPatternShiftSelection = $defaultValArr + $sysPatternShiftSelection;
+		}
+		
+		$form->addSelect('sysPatternShiftSelect', 'Select type of your shift', $sysPatternShiftSelection)
+			->setDefaultValue($defaultVal);
+		
+		
+		// Pattern input
+		if ($userPatternRow->sys_pattern_id > 0)
+		{
+			$patternArr = $this->sysPatternFacadeFactory->create()->getFormPattern($userPatternRow->sys_pattern_id);
+		}
+		else
+		{
+			$patternArr = $this->customPatternFacadeFactory->create()->getFormPattern($userPatternRow->custom_pattern_id);
+		}
+		
+		$defaultPattern = $this->buildDefaultInputPattern($patternArr);
 		
 		$form['patternInput'] = $this->patternInputOverviewFactory->create();
 		$form['patternInput']->setDefaultValue($defaultPattern);

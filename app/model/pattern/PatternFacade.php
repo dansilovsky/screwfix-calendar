@@ -15,29 +15,80 @@ class PatternFacade extends RepositoryFacade {
 	{
 		parent::__construct($repository, $cache, $date);
 	}
+	
+	/**
+	 * @param integer $user_id
+	 * @return \Nette\Database\Table\IRow|bool
+	 */
+	public function getByUserId($user_id)
+	{
+		return $this->repository->findByUserId($user_id)->fetch();
+	}
+	
+	/**
+	 * @param integer $user_id
+	 * @return \Nette\Database\Table\IRow|null
+	 */
+	public function getCustomPatternByUserId($user_id)
+	{
+		$row = $this->getByUserId($user_id);
+		
+		return $row ? $row->ref('custom_pattern', 'custom_pattern_id') : null;
+	}
+	
+	/**
+	 * Returns assoc array (hash) build for template.
+	 * Key is 'custom' 
+	 * Value contain custom pattern in json string.
+	 * 
+	 * @param integer $user_id
+	 * @return array|null
+	 */
+	public function getCustomPatternTemplateHash($user_id)
+	{
+		$customPatternRow = $this->getCustomPatternByUserId($user_id);
+		
+		if ($customPatternRow !== null)
+		{
+			$jsonPattern = unserialize($customPatternRow->pattern)->toJson();
+
+			return ['0:0' => $jsonPattern];
+		}
+		
+		return null;
+	}
 
 	/**
-	 * Fetches a pattern row for given user. 
-	 * Unserializes a pattern and returns it.
+	 * Fetches a pattern for given user. 
+	 * Unserializes the pattern and returns it.
 	 * 
 	 * @param  int  $user_id
 	 * @return ShiftPatternFilter|false
 	 */
 	public function getPatternFilter($user_id)
-	{		
+	{
 		$patternRow = $this->repository->findByUserId($user_id)->fetch();
 		
-		return ($patternRow === false) ? false : unserialize($patternRow->pattern);
+		$refPatternRow = $patternRow->ref('sys_pattern', 'sys_pattern_id');
+		
+		if ($refPatternRow === null)
+		{
+			// sys pattern does not exist try to get custom pattern
+			$refPatternRow = $patternRow->ref('custom_pattern', 'custom_pattern_id');
+		}
+		
+		return $refPatternRow === null ? false : unserialize($refPatternRow->pattern);
 	}
 	
-	public function save($userId, ShiftPatternFilter $pattern)
+	public function save($userId, $sysPatternId, $customPatternId)
 	{
 		$data = array(
 			'user_id' => $userId, 
-			'pattern' => serialize($pattern)
+			'sys_pattern_id' => $sysPatternId,
+			'custom_pattern_id' => $customPatternId
 		);
 		
-		$this->repository->insert($data);
+		return $this->repository->insert($data);
 	}
 	
 	public function update($userId, ShiftPatternFilter $pattern)
@@ -49,14 +100,8 @@ class PatternFacade extends RepositoryFacade {
 		$this->repository->findByUserId($userId)->update($data);
 	}
 	
-	public function getFormSelection($user_id)
+	public function getUserPattern($user_id)
 	{		
-		$patternJson = $this->getPatternFilter($user_id)
-			->toJson();		
-		
-		return array(
-			$patternJson => 'My pattern'
-		);
-		
+		return $this->repository->get($user_id);		
 	}
 }

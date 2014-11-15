@@ -27,7 +27,7 @@ abstract class RepositoryFacade {
 	protected $date;
 	
 	/**
-	 * @var Nette\Database\Context 
+	 * @var \Nette\Database\Context 
 	 */
 	protected $context;
 	

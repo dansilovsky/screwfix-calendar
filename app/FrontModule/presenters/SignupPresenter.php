@@ -47,12 +47,16 @@ class SignupPresenter extends BaseaccountPresenter {
 		$form['employmentDate'] = $this->employmentDateInputFactory->create();
 
 		// shift pattern part		
-		$sysPatternSelection = $this->sysPatternFacade->getFormSelection();
+		$sysPatternTeamSelection = $this->teamFacadeFactory->create()->getFormSelection();
+		
+		$form->addPatternSelect('sysPatternTeamSelect', 'Select your team', $sysPatternTeamSelection);
+		
+		$sysPatternShiftSelection = $this->shiftFacadeFactory->create()->getFormSelection();
+		
+		$form->addPatternSelect('sysPatternShiftSelect', 'Select type of your shift', $sysPatternShiftSelection);
 
-		$form->addSelect('sysPatternSelect', 'Select pattern', $sysPatternSelection);
-
-		reset($sysPatternSelection);
-		$defaultPattern = $this->buildDefaultInputPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
+		$sysPattern = $this->sysPatternFacadeFactory->create()->getDefaultFormPattern();
+		$defaultPattern = $this->buildDefaultInputPattern($sysPattern);
 
 		$form['patternInput'] = $this->patternInputOverviewFactory->create();
 		$form['patternInput']->setDefaultValue($defaultPattern);
@@ -63,13 +67,15 @@ class SignupPresenter extends BaseaccountPresenter {
 		// common part		
 		$form->addProtection('Time limit has expired. Please send the form again.', 1800);
 		$form->onSuccess[] = $this->signupFormSubmitted;
+		
+		$form->onError[] = $this->signupFormError;
 
 		return $form;
 	}
 
 	/**
 	 *
-	 * @param  Nette\Application\UI\Form $form
+	 * @param  Form $form
 	 */
 	public function signupFormSubmitted(Form $form)
 	{
@@ -102,6 +108,8 @@ class SignupPresenter extends BaseaccountPresenter {
 				'password' => $hashedPassword,
 				'credits' => $this->workOutFormEmployment($formValues)
 			);
+			
+			$patternFacadeFactory = $this->patternFacadeFactory->create();
 
 			try
 			{
@@ -116,11 +124,23 @@ class SignupPresenter extends BaseaccountPresenter {
 
 				$user->login($formValues->username, $formValues->password);
 
-				$pattern = $this->adjustPattern($formValues->patternInput['pattern'], $formValues->patternInput['firstDay']);
-
-				$patternFilter = $this->shiftPatternFilterFactory->create($pattern);
-				
-				$this->patternFacade->save($user->getId(), $patternFilter);
+				if ($formValues->sysPatternTeamSelect === 0 && $formValues->sysPatternShiftSelect === 0)
+				{
+					$pattern = $this->adjustPattern($formValues->patternInput['pattern'], $formValues->patternInput['firstDay']);
+					
+					$patternFilter = $this->shiftPatternFilterFactory->create($pattern);
+					
+					$customPatternRow = $this->customPatternFacadeFactory->create()->save($patternFilter);
+					
+					$patternFacadeFactory->save($user->getId(), 0, $customPatternRow->id);
+				}
+				else
+				{
+					$sysPatternId = $this->sysPatternFacadeFactory->create()
+						->getId($formValues->sysPatternTeamSelect, $formValues->sysPatternShiftSelect);
+					
+					$patternFacadeFactory->save($user->getId(), $sysPatternId, 0);
+				}
 			}
 			catch (\Exception $ex)
 			{
@@ -128,6 +148,39 @@ class SignupPresenter extends BaseaccountPresenter {
 			}
 
 			$this->redirect('Home:default');
+		}
+	}
+	
+	/**
+	 * If we get error while client sent customized pattern 
+	 * then we need to add custom option to team select and shift select.
+	 * 
+	 * @param Form $form
+	 */
+	public function signupFormError(Form $form)
+	{
+		$formValues = $form->getValues();
+		
+		if ($formValues->sysPatternTeamSelect === 0)
+		{
+			$addItems = [0 => 'Custom'];
+			
+			$origItems = $form['sysPatternTeamSelect']->getItems();
+			
+			$newItems = $addItems + $origItems;
+			
+			$form['sysPatternTeamSelect']->setItems($newItems);
+		}
+		
+		if ($formValues->sysPatternShiftSelect === 0)
+		{
+			$addItems = [0 => 'Custom'];
+			
+			$origItems = $form['sysPatternShiftSelect']->getItems();
+			
+			$newItems = $addItems + $origItems;
+			
+			$form['sysPatternShiftSelect']->setItems($newItems);
 		}
 	}
 
