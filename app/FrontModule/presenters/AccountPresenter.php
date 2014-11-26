@@ -207,7 +207,7 @@ class AccountPresenter extends BaseaccountPresenter {
 			$sysPatternTeamSelection = $defaultValArr + $sysPatternTeamSelection;
 		}
 		
-		$form->addSelect('sysPatternTeamSelect', 'Select your team', $sysPatternTeamSelection)
+		$form->addPatternSelect('sysPatternTeamSelect', 'Select your team', $sysPatternTeamSelection)
 			->setDefaultValue($defaultVal);
 		
 		
@@ -223,7 +223,7 @@ class AccountPresenter extends BaseaccountPresenter {
 			$sysPatternShiftSelection = $defaultValArr + $sysPatternShiftSelection;
 		}
 		
-		$form->addSelect('sysPatternShiftSelect', 'Select type of your shift', $sysPatternShiftSelection)
+		$form->addPatternSelect('sysPatternShiftSelect', 'Select type of your shift', $sysPatternShiftSelection)
 			->setDefaultValue($defaultVal);
 		
 		
@@ -253,14 +253,60 @@ class AccountPresenter extends BaseaccountPresenter {
 	public function setupFormSubmitted(Form $form) 
 	{
 		$formValues = $form->getValues();
-
+		
+		$userId = $this->user->getId();
+		
 		try
 		{
-			$pattern = $this->adjustPattern($formValues->patternInput['pattern'], $formValues->patternInput['firstDay']);
+			$patternFacade = $this->patternFacadeFactory->create();
 			
-			$patternFilter = $this->shiftPatternFilterFactory->create($pattern);
-
-			$this->patternFacade->update($this->identity->id, $patternFilter);
+			$originalPatternRow = $patternFacade->getByUserId($userId);
+			
+			if ($formValues->sysPatternTeamSelect === 0 && $formValues->sysPatternShiftSelect === 0)
+			{
+				// custom
+				$pattern = $this->adjustPattern($formValues->patternInput['pattern'], $formValues->patternInput['firstDay']);
+					
+				$patternFilter = $this->shiftPatternFilterFactory->create($pattern);
+				
+				if ($originalPatternRow->custom_pattern_id > 0)
+				{
+					$customPatternId = $originalPatternRow->custom_pattern_id;
+					
+					$this->customPatternFacadeFactory->create()->update($customPatternId, $patternFilter);
+				}
+				else
+				{
+					
+					$customPatternRow = $this->customPatternFacadeFactory->create()->save($patternFilter);
+					
+					$customPatternId = $customPatternRow->id;
+				}
+				
+				$sysPatternId = 0;
+				
+				// add custom options to team and shift select boxes				
+				$customOption = [0 => 'Custom'];
+				$teamOptions = $customOption + $form['sysPatternTeamSelect']->getItems();
+				$shiftOptions = $customOption + $form['sysPatternShiftSelect']->getItems();
+				
+				$form['sysPatternTeamSelect']->setItems($teamOptions);
+				$form['sysPatternShiftSelect']->setItems($shiftOptions);
+			}
+			else
+			{
+				// system
+				if ($originalPatternRow->custom_pattern_id > 0)
+				{
+					$this->customPatternFacadeFactory->create()->delete($originalPatternRow->custom_pattern_id);
+				}
+				
+				$sysPatternId = $this->sysPatternFacadeFactory->create()->getId($formValues->sysPatternTeamSelect, $formValues->sysPatternShiftSelect);
+				
+				$customPatternId = 0;
+			}
+			
+			$this->patternFacadeFactory->create()->update($userId, $sysPatternId, $customPatternId);
 		}
 		catch (\Exception $ex)
 		{

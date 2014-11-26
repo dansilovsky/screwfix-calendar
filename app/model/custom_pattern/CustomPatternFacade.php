@@ -14,6 +14,11 @@ class CustomPatternFacade extends RepositoryFacade {
 		parent::__construct($repository, $cache, $date);
 	}
 	
+	public function findById($id)
+	{
+		return $this->repository->where('id', $id);
+	}
+	
 	/**
 	 * Get array of unserialized shift pattern for given $id.
 	 * 
@@ -34,6 +39,10 @@ class CustomPatternFacade extends RepositoryFacade {
 		return null;
 	}
 	
+	/**
+	 * @param  ShiftPatternFilter   $pattern
+	 * @return IRow|int|bool Returns IRow or number of affected rows for Selection or table without primary key
+	 */
 	public function save(ShiftPatternFilter $pattern)
 	{
 		$data = array(
@@ -41,5 +50,19 @@ class CustomPatternFacade extends RepositoryFacade {
 		);
 		
 		return $this->repository->insert($data);
+	}
+	
+	public function update($id, ShiftPatternFilter $pattern)
+	{
+		$data = [
+			'pattern' => serialize($pattern)
+		];
+		
+		$this->findById($id)->update($data);
+	}
+	
+	public function delete($id)
+	{
+		$this->findById($id)->delete();
 	}
 }

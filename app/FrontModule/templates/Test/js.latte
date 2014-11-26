@@ -1,0 +1,52 @@
+<html lang="en-GB" >
+<head>
+<title>Screwfix calendar xxxx</title>
+<script type="text/javascript" src="/js/jquery.js"></script>
+</head>
+<body><button id="createNodes">Create nodes</button></body>
+</html>
+<script type="text/javascript">
+'use strict';
+(function clApp($) {
+
+	function createNode(text) {
+		var div = document.createElement("div"),
+			innerDiv = document.createElement("div");
+		innerDiv.appendChild(document.createTextNode(text + " - " + new Date().toTimeString()));
+		div.appendChild(innerDiv);
+		return div;
+	}
+
+	function createLeakedNodes() {
+		var i;
+		var temp;
+		for (i = 0; i < 20; i++) {
+			temp = createNode("Leaked:" + i);
+			$(temp).click(function clLeaked(){
+				console.log('test');
+			});
+		}
+	}
+
+	function createGCNodes() {
+		var i;
+		for (i = 0; i < 20; i++) {
+			createNode("Collected:" + i);
+		}
+	}
+
+	function createNodes() {
+		createLeakedNodes();
+		createGCNodes();
+	}
+	var that = this;
+	
+	var button = $('button');
+	button.click(function clLeakedTest(){
+		createNodes();
+	});
+	
+})(jQuery);
+
+</script>
+

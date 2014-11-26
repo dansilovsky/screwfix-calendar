@@ -1,4 +1,4 @@
-(function($) {
+(function clApp($) {
 	
 	var appGlobal  = {
 		// stores compiled tamplates
@@ -15,7 +15,7 @@
 		el: $('body'),
 		urlRoot: window.document.URL,
 		
-		initialize: function() {			
+		initialize: function clInitialize() {			
 			this.formIdSelector = '#frm-baseaccountForm';
 			
 			this.user = new Zidane.User(this.screwfix.user, new Zidane.Acl(this.screwfix.acl.roles));
@@ -31,7 +31,7 @@
 	
 	var FormView = Backbone.View.extend({
 		
-		initialize: function(options) {
+		initialize: function clInitialize(options) {
 			// AppView
 			this.master = options.master;
 			// AppView
@@ -51,14 +51,14 @@
 			"submit": "setPatternInput"
 		},
 		
-		setPatternInput: function() {
+		setPatternInput: function clSetPatternInput() {
 			this.patternInputView.setPatternInput();
 		}
 	});
 	
 	var EmploymentView = Backbone.View.extend({
 		
-		initialize: function(options) {
+		initialize: function clInitialize(options) {
 			// AppView
 			this.master = options.master;
 			// FormView
@@ -74,7 +74,7 @@
 	
 	var EmploymentLengthView = Backbone.View.extend({
 		
-		initialize: function(options) {
+		initialize: function clInitialize(options) {
 			// AppView
 			this.master = options.master;
 			// EmploymentView
@@ -87,7 +87,7 @@
 			"change": "change"
 		},
 		
-		change: function() {
+		change: function clChange() {
 			this.parent.employmentDateView;
 			if (this.$el.val() === 'full') {
 				this.parent.employmentDateView.hide();
@@ -103,7 +103,7 @@
 		isBuilt: false,
 		$renderEl: null,		
 		
-		initialize: function(options) {
+		initialize: function clInitialize(options) {
 			// AppView
 			this.master = options.master;
 			// EmploymentView
@@ -115,12 +115,12 @@
 			}			
 		},
 		
-		render: function() {
+		render: function clRender() {
 			this.$el.html(this.template({borderYearsNumber: this.parent.employmentLengthView.borderYearsNumber}));
 			this.isBuilt = true;
 		},
 		
-		display: function() {
+		display: function clDisplay() {
 			if (!this.isBuilt) {
 				this.render();
 			}
@@ -129,14 +129,14 @@
 			}
 		},
 		
-		hide: function() {
+		hide: function clHide() {
 			this.$renderEl = $(this.$el.children()[0]).detach();
 		}
 	});
 	
 	var PatternSelectorView = Backbone.View.extend({
 		
-		initialize: function(options) {
+		initialize: function clInitialize(options) {
 			var that = this;
 			
 			// AppView
@@ -165,7 +165,7 @@
 			this.$shiftOptionCustom = this.$shift.children("option[value='0']");
 		},
 		
-		change: function() {
+		change: function clChange() {
 			var teamId = this.$team.val();
 			var shiftId = this.$shift.val();
 			
@@ -198,7 +198,7 @@
 			this.patternInputView.changeOverview(id);
 		},
 		
-		setOptionCustom: function() {
+		setOptionCustom: function clSetOptionCustom() {
 			if (this.$teamOptionCustom.length === 0) {
 				this.$teamOptionCustom = Zidane.create('option', null, {value: '0'}).text('Custom');
 				this.$shiftOptionCustom = Zidane.create('option', null, {value: '0'}).text('Custom');
@@ -214,7 +214,7 @@
 			this.prevShiftVal = '0';
 		},
 		
-		unsetOptionCustom: function() {
+		unsetOptionCustom: function clUnsetOptionCustom() {
 			if (_.isUndefined(this.screwfix.patterns['0:0'])) {
 				this.$teamOptionCustom.remove();
 				this.$shiftOptionCustom.remove();
@@ -226,7 +226,7 @@
 	
 	var PatternInputView = Backbone.View.extend({
 		
-		initialize: function(options) {
+		initialize: function clInitialize(options) {
 			// AppView
 			this.master = options.master;
 			// FormView
@@ -242,7 +242,7 @@
 		/**
 		 * @param {string} id id of pattern eg '2:1'
 		 */
-		changeOverview: function(id) {			
+		changeOverview: function clChangeOverview(id) {			
 			if (_.isUndefined(this.screwfix.patterns[id])) {
 				// do nothing
 				return;
@@ -255,7 +255,7 @@
 		 * Sets pattern input from values of instance of PatternInputEditView
 		 * @returns {this}
 		 */
-		setPatternInput: function() {
+		setPatternInput: function clSetPatternInput() {
 			this.patternInputEditView.setPatternInput();
 			
 			return this;
@@ -265,7 +265,7 @@
 	var PatternInputOverviewView = Backbone.View.extend({
 		template: appGlobal.templates.formPatternInputOverview,
 		
-		initialize: function(options) {
+		initialize: function clInitialize(options) {
 			// AppView
 			this.master = options.master;
 			// PatternInputView
@@ -281,7 +281,9 @@
 		/**
 		 * @param {array} pattern
 		 */
-		render: function(pattern) {
+		render: function clRender(pattern) {
+			this.$el.empty();
+			
 			var date = this.master.date.clone();
 			date.today().startWeek();
 			
@@ -289,7 +291,7 @@
 			
 			var patternStr = JSON.stringify(inputPattern);
 			
-			date.setFormat(function(y, m, d, o) {
+			date.setFormat(function clSetFormat(y, m, d, o) {
 					return d + ' ' + Zidane.capitalize(o.getMonthString());
 			});
 
@@ -300,7 +302,7 @@
 			return this;
 		},
 		
-		afterRender: function() {
+		afterRender: function clAfterRender() {
 			this.delegateEvents();
 		},
 		
@@ -309,21 +311,23 @@
 		 * @param {array} pattern raw unadjusted pattern
 		 * @returns {this}
 		 */
-		change: function(pattern) {
-			var adjustedPattern = this.patternDate.adjust(pattern);			
+		change: function clChange(pattern) {
+			var adjustedPattern = this.patternDate.adjust(pattern);
 			
 			this.render(adjustedPattern);
 			
 			return this;
 		},
 		
-		customize: function() {
+		customize: function clCustomize() {
 			this.undelegateEvents();
 			
 			var patternInputValue = this.$el.find("input[name='patternInput']").val();
 			
 			var pattern = $.parseJSON(patternInputValue).pattern;
-
+			
+			this.$el.empty();
+			
 			this.parent.patternInputEditView.render(pattern);
 		}
 	});
@@ -331,7 +335,7 @@
 	var PatternInputEditView = Backbone.View.extend({
 		template: appGlobal.templates.formPatternInputEdit,
 		
-		initialize: function(options) {
+		initialize: function clInitialize(options) {
 			// AppView
 			this.master = options.master;
 			// PatternInputView
@@ -355,7 +359,7 @@
 			"click input[name='removeWeek']": "removeWeek"
 		},
 		
-		render: function(pattern) {
+		render: function clRender(pattern) {
 			var date = this.master.date.clone();
 			date.today().startWeek();
 			
@@ -363,7 +367,7 @@
 			
 			var patternStr = JSON.stringify(inputPattern);
 			
-			date.setFormat(function(y, m, d, o) {
+			date.setFormat(function clSetFormat(y, m, d, o) {
 					return d + ' ' + Zidane.capitalize(o.getMonthString());
 			});
 			
@@ -376,7 +380,7 @@
 			
 			var that = this;
 			
-			this.$el.find("td.day").each(function(i) {
+			this.$el.find("td.day").each(function clBuildPatternDayView(i) {
 				var day = new PatternDayView({el: this, master: that.master, parent: that, data: that.daysData[i]});
 				that.days.push(day);
 				that.listenTo(day, 'changed', that.changed);
@@ -387,12 +391,14 @@
 			return this;
 		},
 		
-		afterRender: function() {
+		afterRender: function clAfterRender() {
+			this.delegateEvents();
+			
 			this.isActive = true;
 			this.$input = this.$el.find("input[name='patternInput']");
 		},
 		
-		uncustomize: function() {
+		uncustomize: function clUncustomize() {			
 			this.setPatternInput();
 			
 			var patternInputValue = this.$input.val();
@@ -401,6 +407,8 @@
 			
 			this.isActive = false;
 			
+			this.clear();
+			
 			this.parent.patternInputOverviewView.render(pattern);
 		},
 		
@@ -408,7 +416,7 @@
 		 * Collects pattern from times kept in pattern day views.
 		 * @returns {Array}
 		 */
-		getPattern: function() {
+		getPattern: function clGetPattern() {
 			var pattern = [];
 			for(var i=0, w=-1; i<this.days.length; i++) {
 				if (i%7 === 0) {
@@ -425,7 +433,7 @@
 		 * Sets input pattern value from times collected from PatternDayView instances
 		 * @returns {this}
 		 */
-		setPatternInput: function() {
+		setPatternInput: function clSetPatternInput() {
 			if (this.isActive) {
 				var date = this.days[0].getDate();
 				var firstDay = new Zidane.Calendar(date.getYear(), date.getMonth(), date.getDate());
@@ -438,7 +446,7 @@
 			return this;
 		},
 		
-		addWeek: function() {
+		addWeek: function clAddWeek() {
 			var pattern = this.getPattern();
 			var w = pattern.length;
 			
@@ -459,7 +467,7 @@
 			return this;
 		},
 		
-		removeWeek: function() {
+		removeWeek: function clRemoveWeek() {
 			var pattern = this.getPattern();
 			
 			if (pattern.length > 1) {
@@ -474,8 +482,19 @@
 			return this;
 		},
 		
-		changed: function() {
+		changed: function clChanged() {
 			this.master.formView.patternSelectorView.setOptionCustom();
+		},
+		
+		clear: function clClear() {
+			this.undelegateEvents();
+			this.stopListening();
+			for (var i=0; i<this.days.length; i++) {
+				this.days[i].remove();
+			}
+			this.$input = null;
+			this.days = [];
+			this.$el.empty();
 		}
 	});
 	
@@ -486,7 +505,7 @@
 		templateIn: appGlobal.templates.formPatternInputDayIn,
 		templateOff: appGlobal.templates.formPatternInputDayOff,
 		
-		initialize: function(options) {
+		initialize: function clInitialize(options) {
 			// AppView
 			this.master = options.master;
 			// PatternInputEditView
@@ -506,7 +525,7 @@
 			"change select": "setTimes"
 		},
 		
-		render: function() {
+		render: function clRender() {
 			if (this.state === 'in') {
 				this.renderIn();
 			}
@@ -517,7 +536,7 @@
 			return this;
 		},
 		
-		renderIn: function() {
+		renderIn: function clRenderIn() {
 			this.$el.attr('class', 'day dayIn');
 			this.$el.html(this.templateIn({date: this.date, times: this.times, view: this}));
 			
@@ -526,7 +545,7 @@
 			return this;
 		},
 		
-		renderOff: function() {
+		renderOff: function clRenderOff() {
 			this.$el.attr('class', 'day dayOff');
 			this.$el.html(this.templateOff({date: this.date, times: this.times, view: this}));
 			
@@ -535,7 +554,7 @@
 			return this;
 		},
 		
-		changeState: function() {
+		changeState: function clChangeState() {
 			this.state = this.state === 'in' ? 'off' : 'in';
 			
 			if (this.state === 'in') {
@@ -550,7 +569,7 @@
 			}
 			
 			this.trigger('changed');
-			console.log(this.cid + ': DayView fired changed')
+			
 			return this;
 		},
 		
@@ -558,7 +577,7 @@
 		 * Sets times from selects. If off day then it sets times to 'off'
 		 * @returns {this}
 		 */
-		setTimes: function() {
+		setTimes: function clSetTimes() {
 			if (this.$selects) {
 				this.times = [];
 				this.times[0] = $(this.$selects[0]).val() + ':' + $(this.$selects[1]).val();
@@ -569,22 +588,21 @@
 			}
 			
 			this.trigger('changed');
-			console.log(this.cid + ': DayView fired changed')
 			
 			return this;
 		},
 		
-		setDefaultTimes: function() {
+		setDefaultTimes: function clSetDefaultTimes() {
 			this.times = ['00:00', '00:00'];
 			
 			return this;
 		},
 		
-		getTimes: function() {
+		getTimes: function clGetTimes() {
 			return this.times;
 		},
 		
-		getDate: function() {
+		getDate: function clGetDate() {
 			return this.date;
 		},
 		
@@ -593,7 +611,7 @@
 		 * @param {integer} timeUnit hours or minutes
 		 * @returns {string|integer}
 		 */
-		padTime: function(timeUnit) {
+		padTime: function clPadTime(timeUnit) {
 			if (timeUnit < 10) {
 				timeUnit = '0' + timeUnit;
 			}
@@ -608,7 +626,7 @@
 		 * @param {string} type type of time unit either 'h' or 'm'
 		 * @returns {string}
 		 */
-		selectOption: function(t, tString, type) {			
+		selectOption: function clSelectOption(t, tString, type) {			
 			var time = tString.split(':');
 			time = {
 				h: time[0],
@@ -622,4 +640,4 @@
 	//create instance of master view
 	var app = new AppView();
 	
-}(jQuery));
+})(jQuery);

@@ -91,10 +91,11 @@ class PatternFacade extends RepositoryFacade {
 		return $this->repository->insert($data);
 	}
 	
-	public function update($userId, ShiftPatternFilter $pattern)
+	public function update($userId, $sysPatternId, $customPatternId)
 	{
-		$data = array(
-			'pattern' => serialize($pattern)
+		$data = array(			
+			'sys_pattern_id' => $sysPatternId,
+			'custom_pattern_id' => $customPatternId
 		);
 		
 		$this->repository->findByUserId($userId)->update($data);
