@@ -39,19 +39,6 @@ class SysPatternFacade extends RepositoryFacade {
 		return ($patternRow === false) ? false : unserialize($patternRow->pattern);
 	}
 	
-	/**
-	 * Inserts now row into repository into repository. 
-	 * Argument $pattern (instance of ShiftPatternFilter) is serialized before inserting.
-	 * 
-	 * @param  string              $name      name of shift pattern
-	 * @param  ShiftPatternFilter  $pattern   instance of ShiftPatternFilter
-	 */
-	public function insert($name, ShiftPatternFilter $pattern)
-	{
-		$pattern = serialize($pattern);
-		
-		$this->repository->insert(array('name' => $name, 'pattern' => $pattern));
-	}
 	
 	/**
 	 * Get array of first unserialized shift pattern in the table
