@@ -79,6 +79,8 @@ class AccountPresenter extends BaseaccountPresenter {
 				{
 					$identity->email = $userArr['email'];
 				}
+				
+				$this->successfullFlashMessage();
 			} 
 			catch (Exception $ex) 
 			{
@@ -140,6 +142,8 @@ class AccountPresenter extends BaseaccountPresenter {
 				$hashedNewPassword = \Screwfix\Authenticator::calculateHash($formValues->newPassword);
 
 				$this->userFacade->update($this->identity->id, array('password' => $hashedNewPassword));
+				
+				$this->successfullFlashMessage();
 			} 
 			catch (Exception $ex) 
 			{
@@ -185,6 +189,7 @@ class AccountPresenter extends BaseaccountPresenter {
 
 			$this->userFacade->update($this->user->getId(), $data);
 			
+			$this->successfullFlashMessage();
 		}
 		catch (\Exception $ex)
 		{
@@ -392,5 +397,10 @@ class AccountPresenter extends BaseaccountPresenter {
 		list($type, $val) = explode(':', $this->identity->credits);
 		
 		return $type === 'd' ? $val : null;	
+	}
+	
+	public function successfullFlashMessage()
+	{
+		$this->flashMessage('Your changes have been successfully saved.', 'form:success');
 	}
 }

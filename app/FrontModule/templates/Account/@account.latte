@@ -2,7 +2,7 @@
 
 {block contentSidebar}
 
-<p n:foreach="$flashes as $flash">{$flash->message}</p>
+<p n:foreach="$flashes as $flash">{if $flash->type == 'form:success'}{$flash->message}{/if}</p>
 {include #contentAccount}
 
 {define #sidebarMenu}

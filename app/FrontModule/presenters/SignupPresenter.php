@@ -145,6 +145,8 @@ class SignupPresenter extends BaseaccountPresenter {
 					
 					$patternFacadeFactory->save($user->getId(), $sysPatternId, 0);
 				}
+				
+				$this->flashMessage('Your account has been successfully created.', 'form:success');
 			}
 			catch (\Exception $ex)
 			{
