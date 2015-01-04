@@ -13,6 +13,14 @@ use Nette\Application\UI\Form,
  */
 class AccountPresenter extends BaseaccountPresenter {
 	
+	/**
+	 * Should be set in AccountPresenter::createComponentSetupForm(). 
+	 * Should be used in AccountPresenter::setupFormSuccessed() to check if it differs from submitted value.
+	 * @var integer
+	 */
+	protected $setupShiftDefaultId;
+
+
 	protected function createComponentCredentialsForm() 
 	{
 		$form = new BaseaccountForm($this, 'credentialsForm');
@@ -189,68 +197,79 @@ class AccountPresenter extends BaseaccountPresenter {
 	protected function createComponentSetupForm() 
 	{
 		$userPatternRow = $this->patternFacadeFactory->create()->getUserPattern($this->identity->id);
-		
-		$userSysPatternRow = $userPatternRow->ref('sys_pattern', 'sys_pattern_id');
-		
-		$form = new BaseaccountForm($this, 'setupForm');
-		
-		
-		// Team select
-		$sysPatternTeamSelection = $this->teamFacadeFactory->create()->getFormSelection();
-		
-		$defaultVal = $userSysPatternRow !== null ? $userSysPatternRow->team_id : 0;
-		
-		if ($defaultVal === 0)
+
+		if ($userPatternRow->sys_pattern_id)
 		{
-			$defaultValArr = [0 => 'Custom'];
+			$userSysPatternRow = $userPatternRow->ref('sys_pattern', 'sys_pattern_id');			
 			
-			$sysPatternTeamSelection = $defaultValArr + $sysPatternTeamSelection;
-		}
-		
-		$form->addPatternSelect('sysPatternTeamSelect', 'Select your team', $sysPatternTeamSelection)
-			->setDefaultValue($defaultVal);
-		
-		
-		// Shift select
-		$sysPatternShiftSelection = $this->shiftFacadeFactory->create()->getFormSelection();
-		
-		$defaultVal = $userSysPatternRow !== null ? $userSysPatternRow->shift_id : 0;
-		
-		if ($defaultVal === 0)
-		{
-			$defaultValArr = [0 => 'Custom'];
+			$patternArr = unserialize($userSysPatternRow->pattern)->getArray();
 			
-			$sysPatternShiftSelection = $defaultValArr + $sysPatternShiftSelection;
-		}
-		
-		$form->addPatternSelect('sysPatternShiftSelect', 'Select type of your shift', $sysPatternShiftSelection)
-			->setDefaultValue($defaultVal);
-		
-		
-		// Pattern input
-		if ($userPatternRow->sys_pattern_id > 0)
-		{
-			$patternArr = $this->sysPatternFacadeFactory->create()->getFormPattern($userPatternRow->sys_pattern_id);
+			$shiftDefaultId = $userSysPatternRow->shift_id;			
+			$subshiftDefaultId = $userSysPatternRow->subshift_id ? $userSysPatternRow->subshift_id : 0;
 		}
 		else
 		{
-			$patternArr = $this->customPatternFacadeFactory->create()->getFormPattern($userPatternRow->custom_pattern_id);
+			$userCustomPatternRow = $userPatternRow->ref('custom_pattern', 'custom_pattern_id');
+			
+			$patternArr = unserialize($userCustomPatternRow->pattern)->getArray();
+			
+			$shiftDefaultId = 0;
+			$subshiftDefaultId = 0;
 		}
 		
+		
+		$this->setupShiftDefaultId = $shiftDefaultId;
+		
+		$form = new BaseaccountForm($this, 'setupForm');
+		
+		// shift select		
+		$sysPatternShiftSelection = $this->shiftFacadeFactory->create()->getFormSelection();
+				
+		if ($shiftDefaultId)
+		{			
+			$sysPatternShiftSelectionComplete = [0 => 'Custom'] + $sysPatternShiftSelection;			
+		}
+		else
+		{
+			$sysPatternShiftSelection = [0 => 'Custom'] + $sysPatternShiftSelection;
+			
+			$sysPatternShiftSelectionComplete = $sysPatternShiftSelection;
+		}
+		
+		$form->addPatternSelect('sysPatternShiftSelect', 'Select your shift', $sysPatternShiftSelection, $sysPatternShiftSelectionComplete)
+			->setDefaultValue($shiftDefaultId);		
+		
+		// subshift select
+		$sysPatternSubshiftSelection = 
+			$subshiftDefaultId ? 
+			$this->subshiftFacadeFactory->create()->getFormSelection($shiftDefaultId) :
+			[];
+		
+		$sysPatternSubshiftSelectionComplete = $this->subshiftFacadeFactory->create()->getFormSelectionComplete();
+		
+		$form->addPatternSelect('sysPatternSubshiftSelect', 'Select type of your shift', $sysPatternSubshiftSelection, $sysPatternSubshiftSelectionComplete);
+		
+		if ($subshiftDefaultId)
+		{
+			$form['sysPatternSubshiftSelect']->setDefaultValue($subshiftDefaultId);
+		}		
+		
+		// Pattern input		
 		$defaultPattern = $this->buildDefaultInputPattern($patternArr);
 		
 		$form['patternInput'] = $this->patternInputOverviewFactory->create();
 		$form['patternInput']->setDefaultValue($defaultPattern);
 		
-		$form->addSubmit('send', 'Send')
+		$form->addSubmit('edit', 'Edit')
 			->setAttribute('class', 'button');
 		
-		$form->onSuccess[] = $this->setupFormSubmitted;
+		$form->onSuccess[] = $this->setupFormSuccessed;
+		$form->onSubmit[] = $this->setupFormSubmitted;
 		
 		return $form;
 	}
 	
-	public function setupFormSubmitted(Form $form) 
+	public function setupFormSuccessed(Form $form) 
 	{
 		$formValues = $form->getValues();
 		
@@ -262,7 +281,7 @@ class AccountPresenter extends BaseaccountPresenter {
 			
 			$originalPatternRow = $patternFacade->getByUserId($userId);
 			
-			if ($formValues->sysPatternTeamSelect === 0 && $formValues->sysPatternShiftSelect === 0)
+			if ($formValues->sysPatternShiftSelect == 0)
 			{
 				// custom
 				$pattern = $this->adjustPattern($formValues->patternInput['pattern'], $formValues->patternInput['firstDay']);
@@ -276,22 +295,13 @@ class AccountPresenter extends BaseaccountPresenter {
 					$this->customPatternFacadeFactory->create()->update($customPatternId, $patternFilter);
 				}
 				else
-				{
-					
+				{					
 					$customPatternRow = $this->customPatternFacadeFactory->create()->save($patternFilter);
 					
 					$customPatternId = $customPatternRow->id;
 				}
 				
-				$sysPatternId = 0;
-				
-				// add custom options to team and shift select boxes				
-				$customOption = [0 => 'Custom'];
-				$teamOptions = $customOption + $form['sysPatternTeamSelect']->getItems();
-				$shiftOptions = $customOption + $form['sysPatternShiftSelect']->getItems();
-				
-				$form['sysPatternTeamSelect']->setItems($teamOptions);
-				$form['sysPatternShiftSelect']->setItems($shiftOptions);
+				$sysPatternId = null;
 			}
 			else
 			{
@@ -301,16 +311,72 @@ class AccountPresenter extends BaseaccountPresenter {
 					$this->customPatternFacadeFactory->create()->delete($originalPatternRow->custom_pattern_id);
 				}
 				
-				$sysPatternId = $this->sysPatternFacadeFactory->create()->getId($formValues->sysPatternTeamSelect, $formValues->sysPatternShiftSelect);
+				$sysPatternId = $this->sysPatternFacadeFactory->create()->getId($formValues->sysPatternShiftSelect, $formValues->sysPatternSubshiftSelect);
 				
-				$customPatternId = 0;
+				$customPatternId = null;
 			}
 			
 			$this->patternFacadeFactory->create()->update($userId, $sysPatternId, $customPatternId);
+			
+			$this->flashMessage('Your changes have been successfully saved.');
 		}
 		catch (\Exception $ex)
 		{
 			$form->addError('Sorry, something went wrong. Please try again.');
+		}
+	}
+	
+	public function setupFormSubmitted(Form $form)
+	{
+		$formValues = $form->getValues();
+		
+		$userId = $this->user->getId();		
+		
+		if ($formValues->sysPatternShiftSelect == 0)
+		{
+			if ($this->setupShiftDefaultId != $formValues->sysPatternShiftSelect)
+			{
+				// add custom option to shift selection
+				$sysPatternShiftSelectItems = $form['sysPatternShiftSelect']->getItems();
+				
+				$customOption = [0 => 'Custom'];
+				$shiftOptions = $customOption + $sysPatternShiftSelectItems;
+
+				$form['sysPatternShiftSelect']->setItems($shiftOptions);
+			}
+			
+			$form['sysPatternSubshiftSelect']->setItems([]);
+		}
+		else 
+		{	
+			if ($this->setupShiftDefaultId != $formValues->sysPatternShiftSelect)
+			{
+				// remove custom option from shift selection				
+				$shiftOptions = $this->shiftFacadeFactory->create()->getFormSelection();
+
+				$form['sysPatternShiftSelect']->setItems($shiftOptions);
+			}
+			
+			if ($formValues->sysPatternSubshiftSelect > 0)
+			{
+				if ($this->setupShiftDefaultId != $formValues->sysPatternShiftSelect)
+				{
+					// change subshift selection items only if it differs from the one set in AccountPresenter::createComponentSetupForm()
+					$sysPatternSubshiftSelection = $this->subshiftFacadeFactory->create()->getFormSelection($formValues->sysPatternShiftSelect);
+
+					$form['sysPatternSubshiftSelect']->setItems($sysPatternSubshiftSelection);
+					
+					if ($this->setupShiftDefaultId == 0)
+					{
+						// remove custom option from shift selection
+						$shiftSelection = $form['sysPatternShiftSelect']->getItems();
+					}
+				}
+			}		
+			else
+			{
+				$form['sysPatternSubshiftSelect']->setItems([]);
+			}
 		}
 	}
 	

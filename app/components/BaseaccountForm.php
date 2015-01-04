@@ -25,9 +25,9 @@ class BaseaccountForm extends \Nette\Application\UI\Form {
 		return $this->_name;
 	}
 	
-	public function addPatternSelect($name, $label = null, array $items = null, $size = null)
+	public function addPatternSelect($name, $label = null, array $items = null, array $itemsComplete = null, $size = null)
 	{		
-		$control = new PatternSelectBox($label, $items);
+		$control = new PatternSelectBox($label, $items, $itemsComplete);
 		
 		if ($size > 1) {
 			$control->setAttribute('size', (int) $size);

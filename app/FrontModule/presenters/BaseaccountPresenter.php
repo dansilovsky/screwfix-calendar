@@ -32,7 +32,7 @@ abstract class BaseaccountPresenter extends BasePresenter {
 	{
 		parent::beforeRender();
 		
-		$patterns = $this->sysPatternFacadeFactory->create()->getTemplateHash();
+		$patternsMap = $this->sysPatternFacadeFactory->create()->getMap();
 		
 		if ($this->user->isLoggedIn())
 		{
@@ -40,11 +40,13 @@ abstract class BaseaccountPresenter extends BasePresenter {
 			
 			if ($customPattern !== null)
 			{
-				$patterns = $customPattern + $patterns;
+				$patternsMap = $customPattern + $patternsMap;
 			}
 		}
 		
-		$this->template->patterns = $patterns;
+		$this->template->patternsMap = $patternsMap;
+		
+		$this->template->subshiftsMap = $this->subshiftFacadeFactory->create()->getMap();
 	}
 	
 	/**

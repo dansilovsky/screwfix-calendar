@@ -4,6 +4,7 @@
 		// stores compiled tamplates
 		templates: {
 			formEmploymentDate: _.template($('#formEmploymentDateTemplate').html(), null, {variable: 'mo'}),
+			formPatternSelectorSubshift: _.template($('#formPatternSelectorSubshiftTemplate').html(), null, {variable: 'data'}),
 			formPatternInputOverview: _.template($('#formPatternInputOverviewTemplate').html(), null, {variable: 'mo'}),
 			formPatternInputEdit: _.template($('#formPatternInputEditTemplate').html(), null, {variable: 'mo'}),
 			formPatternInputDayIn: _.template($('#formPatternInputDayInTemplate').html(), null, {variable: 'mo'}),
@@ -135,6 +136,7 @@
 	});
 	
 	var PatternSelectorView = Backbone.View.extend({
+		template: appGlobal.templates.formPatternSelectorSubshift,
 		
 		initialize: function clInitialize(options) {
 			var that = this;
@@ -147,79 +149,90 @@
 			
 			this.patternInputView = options.patternInputView;
 			
-			this.$team = this.$el.find(this.master.formIdSelector + '-sysPatternTeamSelect');
+			this.subshiftsMap = this.screwfix.subshiftsMap;
 			
 			this.$shift = this.$el.find(this.master.formIdSelector + '-sysPatternShiftSelect');
 			
-			this.prevTeamVal = this.$team.val();
-			this.prevShiftVal = this.$shift.val();
+			this.$shift.change(changeShift);			
 			
-			this.$team.change(change);
-			this.$shift.change(change);
+			this.$subshiftParent = $(this.$el.children()[1]);			
+			this.set$subshift();
 			
-			function change() {
-				that.change(); 
+			function changeShift() {
+				that.changeShift(); 
 			}
 			
-			this.$teamOptionCustom = this.$team.children("option[value='0']");
 			this.$shiftOptionCustom = this.$shift.children("option[value='0']");
 		},
 		
-		change: function clChange() {
-			var teamId = this.$team.val();
+		set$subshift: function clSet$subshift() {
+			var that = this;
+			
+			this.$subshift = this.$subshiftParent.children(this.master.formIdSelector + '-sysPatternSubshiftSelect');
+			
+			if (this.$subshift.length) {this.$subshift.change(changeSubshift);
+			}			
+			
+			function changeSubshift() {
+				that.changeSubshift()
+			}			
+		},
+		
+		changeShift: function clChangeShift() {
 			var shiftId = this.$shift.val();
+			var subshiftId = _.isUndefined(this.subshiftsMap[shiftId]) ? 0 : _.keys(this.subshiftsMap[shiftId])[0];
+			var id = shiftId + ':' + subshiftId;
 			
-			if (this.prevTeamVal != 0 && this.prevShiftVal != 0) {
-				if (teamId == 0) {
-					this.$shift.children("option[value='0']").prop('selected', true);
-				}
-				
-				if (shiftId == 0) {
-					this.$team.children("option[value='0']").prop('selected', true);
-				}
+			this.removeSubshift();
+			
+			if (subshiftId) {
+				this.renderSubshift(shiftId);
 			}
-			else if (this.prevTeamVal == 0 && this.prevShiftVal == 0) {
-				if (teamId > 0) {
-					this.$shift.children("option[value='1']").prop('selected', true);
-				}
-				
-				if (shiftId > 0) {
-					this.$team.children("option[value='1']").prop('selected', true);
-				}
-			}
-				
-			this.unsetOptionCustom();			
 			
-			this.prevTeamVal = teamId = this.$team.val();
-			this.prevShiftVal = shiftId = this.$shift.val();
+			this.patternInputView.changeOverview(id);
 			
-			var id = teamId == 0 || shiftId == 0 ? '0:0' : teamId + ':' + shiftId;
+			this.unsetOptionCustom();
+		},
+		
+		changeSubshift: function clChangeSubshift() {
+			var shiftId = this.$shift.val();
+			var subshiftId = this.$subshift.val();
+			var id = shiftId + ':' + subshiftId;
 			
 			this.patternInputView.changeOverview(id);
 		},
 		
+		renderSubshift: function clRenderSubshift(shiftId) {
+			var data = this.subshiftsMap[shiftId];
+			
+			this.$subshiftParent.html(this.template(data));
+			this.$subshiftParent.addClass('formRowNolabel');
+			
+			this.set$subshift();
+		},
+		
+		removeSubshift: function clRemoveSubshift() {
+			this.$subshiftParent.empty()
+				.removeClass();
+		},
+		
 		setOptionCustom: function clSetOptionCustom() {
-			if (this.$teamOptionCustom.length === 0) {
-				this.$teamOptionCustom = Zidane.create('option', null, {value: '0'}).text('Custom');
+			if (this.$shiftOptionCustom.length === 0) {
 				this.$shiftOptionCustom = Zidane.create('option', null, {value: '0'}).text('Custom');
 
-				this.$team.prepend(this.$teamOptionCustom);
 				this.$shift.prepend(this.$shiftOptionCustom);
 			}
 			
-			this.$teamOptionCustom.prop('selected', true);
 			this.$shiftOptionCustom.prop('selected', true);
 			
-			this.prevTeamVal = '0';
-			this.prevShiftVal = '0';
+			this.removeSubshift();
 		},
 		
 		unsetOptionCustom: function clUnsetOptionCustom() {
-			if (_.isUndefined(this.screwfix.patterns['0:0'])) {
-				this.$teamOptionCustom.remove();
+			if (_.isUndefined(this.screwfix.patternsMap['0:0'])) {
 				this.$shiftOptionCustom.remove();
 				
-				this.$teamOptionCustom = $();
+				this.$shiftOptionCustom = $();
 			}
 		}
 	});
@@ -235,20 +248,18 @@
 			this.patternInputOverviewView = new PatternInputOverviewView({el: this.el, master: this.master, parent: this});
 			
 			this.patternInputEditView = new PatternInputEditView({el: this.el, master: this.master, parent: this});
-			
-			this.patterns = options.patterns;
 		},
 		
 		/**
 		 * @param {string} id id of pattern eg '2:1'
 		 */
 		changeOverview: function clChangeOverview(id) {			
-			if (_.isUndefined(this.screwfix.patterns[id])) {
+			if (_.isUndefined(this.screwfix.patternsMap[id])) {
 				// do nothing
 				return;
 			}
 			
-			this.patternInputOverviewView.change(this.screwfix.patterns[id]);
+			this.patternInputOverviewView.change(this.screwfix.patternsMap[id]);
 		},
 		
 		/**

@@ -44,11 +44,11 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	 */
 	protected $patternFacade;
 	
-	/** @var \Screwfix\TeamFacadeFactory @inject */ 
-	public $teamFacadeFactory;
-	
 	/** @var \Screwfix\ShiftFacadeFactory @inject */ 
 	public $shiftFacadeFactory;
+	
+	/** @var \Screwfix\SubshiftFacadeFactory @inject */ 
+	public $subshiftFacadeFactory;
 
 	/**
 	 * @var SysPatternFacade 

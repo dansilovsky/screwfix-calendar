@@ -71,15 +71,15 @@ common:
 		customPatternFacade: Screwfix\CustomPatternFacade
 		customPatternFacadeFactory: Screwfix\CustomPatternFacadeFactory
 
-		teamRepository: Screwfix\TeamRepository
-		teamRepositoryFactory: Screwfix\TeamRepositoryFactory
-		teamFacade: Screwfix\TeamFacade
-		teamFacadeFactory: Screwfix\TeamFacadeFactory
-
 		shiftRepository: Screwfix\ShiftRepository
 		shiftRepositoryFactory: Screwfix\ShiftRepositoryFactory
 		shiftFacade: Screwfix\ShiftFacade
 		shiftFacadeFactory: Screwfix\ShiftFacadeFactory
+
+		subshiftRepository: Screwfix\SubshiftRepository
+		subshiftRepositoryFactory: Screwfix\SubshiftRepositoryFactory
+		subshiftFacade: Screwfix\SubshiftFacade
+		subshiftFacadeFactory: Screwfix\SubshiftFacadeFactory
 	
 		userRepository: Screwfix\UserRepository
 		userRepositoryFactory: Screwfix\UserRepositoryFactory

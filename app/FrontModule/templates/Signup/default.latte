@@ -107,18 +107,6 @@
 		</div>
 		<div id="formPattern">
 			<div id="formPatternSelector">
-				{if $form['sysPatternTeamSelect']->errors}
-				<div class="formRowError">
-					<ul>
-						<li n:foreach="$form['sysPatternTeamSelect']->errors as $error">{$error}</li>
-					</ul>
-					{label sysPatternTeamSelect /} {input sysPatternTeamSelect}
-				</div>	
-				{else}
-				<div class="formRowNolabel">
-					{label sysPatternTeamSelect /} {input sysPatternTeamSelect}
-				</div>
-				{/if}
 				{if $form['sysPatternShiftSelect']->errors}
 				<div class="formRowError">
 					<ul>
@@ -130,6 +118,20 @@
 				<div class="formRowNolabel">
 					{label sysPatternShiftSelect /} {input sysPatternShiftSelect}
 				</div>
+				{/if}
+				{if $form['sysPatternSubshiftSelect']->errors}
+				<div class="formRowError">
+					<ul>
+						<li n:foreach="$form['sysPatternSubshiftSelect']->errors as $error">{$error}</li>
+					</ul>
+					{label sysPatternSubshiftSelect /} {input sysPatternSubshiftSelect}
+				</div>	
+				{elseif !empty($form['sysPatternSubshiftSelect']->getItems())}
+				<div class="formRowNolabel">
+					{label sysPatternSubshiftSelect /} {input sysPatternSubshiftSelect}
+				</div>
+				{else}
+				<div></div>
 				{/if}
 			</div>
 			{if $form['patternInput']->errors}

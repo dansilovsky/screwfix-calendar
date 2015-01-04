@@ -6,6 +6,14 @@
 		<input name="employmentDate[year]" type="text" placeholder="yyyy">
 	</div>	
 </script>
+<script type="text/template" id="formPatternSelectorSubshiftTemplate">
+	<label for="frm-baseaccountForm-sysPatternSubshiftSelect">Select your subshift</label>
+	<select name="sysPatternSubshiftSelect" size="1" id="frm-baseaccountForm-sysPatternSubshiftSelect">
+		<% for (var key in data) { %>
+			<option value="<%- key %>"><%- data[key] %></option>			
+		<% } %>
+	</select>
+</script>
 <script type="text/template" id="formPatternInputOverviewTemplate">
 	<input type="hidden" name="patternInput" value="<%- mo.patternStr %>">
 	<tr><th></th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Sunday</th></tr>
@@ -115,11 +123,8 @@
 			<%var roles = $user->getRoles()%>
 			role:<%$roles[0]%>
 		},
-		patterns: {
-		<%foreach $patterns as $id => $pattern%>
-			<%$id%>:<%$pattern|noescape%><%sep%>,<%/sep%>
-		<%/foreach%>
-		}
+		patternsMap: <%$patternsMap%>,
+		subshiftsMap: <%$subshiftsMap%>
 	};
 </script>
 <script type="text/javascript" src="{$basePath}/js/common.js"></script>

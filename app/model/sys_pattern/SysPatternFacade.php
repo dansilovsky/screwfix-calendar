@@ -81,23 +81,24 @@ class SysPatternFacade extends RepositoryFacade {
 	
 	/**
 	 * Returns assoc array (hash) build for template.
-	 * Keys are made of team_id . ':' shift_id. 
-	 * Values contain patterns in json string.
+	 * Keys are made up of team_id . ':' shift_id. 
+	 * Values contain pattern arrays.
 	 * 
 	 * @return array
 	 */
-	public function getTemplateHash()
+	public function getMap()
 	{
 		$hash = [];
 		$id;
 		
 		foreach ($this->repository as $row)
 		{
-			$id =  $row->team_id . ':' . $row->shift_id;
+			$id =  $row->shift_id . ':';
+			$id .= $row->subshift_id !== null ? $row->subshift_id : 0;
 			
-			$jsonPattern = unserialize($row->pattern)->toJson();
+			$patternArr = unserialize($row->pattern)->getArray();
 			
-			$hash[$id] = $jsonPattern;
+			$hash[$id] = $patternArr;			
 		}
 		
 		return $hash;
@@ -118,17 +119,22 @@ class SysPatternFacade extends RepositoryFacade {
 	/**
 	 * Get id from team id and shift id
 	 * 
-	 * @param integer $teamId
 	 * @param integer $shiftId
-	 * @return integer
+	 * @param integer $subshiftId
+	 * @return integer|false if there is no row
 	 */
-	public function getId($teamId, $shiftId)
-	{
-		$row = $this->repository->where('team_id', $teamId)
-			->where('shift_id', $shiftId)
-			->fetch();
+	public function getId($shiftId, $subshiftId)
+	{	
+		if ($subshiftId == 0)
+		{
+			$subshiftId = null;
+		}
+					
+		$row = $this->repository->where('shift_id', $shiftId)
+		->where('subshift_id', $subshiftId)
+		->fetch();
 		
-		return (int) $row->id;
+		return $row !== false ? (int) $row->id : false;
 	}
-
+	
 }

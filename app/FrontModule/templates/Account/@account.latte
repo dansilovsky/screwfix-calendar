@@ -2,6 +2,7 @@
 
 {block contentSidebar}
 
+<p n:foreach="$flashes as $flash">{$flash->message}</p>
 {include #contentAccount}
 
 {define #sidebarMenu}

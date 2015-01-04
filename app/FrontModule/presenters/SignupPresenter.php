@@ -15,7 +15,7 @@ use Nette\Application\UI\Form,
 class SignupPresenter extends BaseaccountPresenter {
 
 	protected function createComponentSignupForm()
-	{
+	{		
 		$form = new BaseaccountForm($this, 'signupForm');
 
 		// credentials part		
@@ -47,13 +47,17 @@ class SignupPresenter extends BaseaccountPresenter {
 		$form['employmentDate'] = $this->employmentDateInputFactory->create();
 
 		// shift pattern part		
-		$sysPatternTeamSelection = $this->teamFacadeFactory->create()->getFormSelection();
-		
-		$form->addPatternSelect('sysPatternTeamSelect', 'Select your team', $sysPatternTeamSelection);
-		
 		$sysPatternShiftSelection = $this->shiftFacadeFactory->create()->getFormSelection();
+		$sysPatternShiftSelectionComplete = [0 => 'Custom'] + $sysPatternShiftSelection;
 		
-		$form->addPatternSelect('sysPatternShiftSelect', 'Select type of your shift', $sysPatternShiftSelection);
+		$form->addPatternSelect('sysPatternShiftSelect', 'Select your shift', $sysPatternShiftSelection, $sysPatternShiftSelectionComplete);
+		
+		reset($sysPatternShiftSelection);
+		
+		$sysPatternSubshiftSelection = $this->subshiftFacadeFactory->create()->getFormSelection(key($sysPatternShiftSelection));		
+		$sysPatternSubshiftSelectionComplete = $this->subshiftFacadeFactory->create()->getFormSelectionComplete();
+		
+		$form->addPatternSelect('sysPatternSubshiftSelect', 'Select your subshift', $sysPatternSubshiftSelection, $sysPatternSubshiftSelectionComplete);
 
 		$sysPattern = $this->sysPatternFacadeFactory->create()->getDefaultFormPattern();
 		$defaultPattern = $this->buildDefaultInputPattern($sysPattern);
@@ -124,7 +128,7 @@ class SignupPresenter extends BaseaccountPresenter {
 
 				$user->login($formValues->username, $formValues->password);
 
-				if ($formValues->sysPatternTeamSelect === 0 && $formValues->sysPatternShiftSelect === 0)
+				if ($formValues->sysPatternShiftSelect === 0)
 				{
 					$pattern = $this->adjustPattern($formValues->patternInput['pattern'], $formValues->patternInput['firstDay']);
 					
@@ -137,7 +141,7 @@ class SignupPresenter extends BaseaccountPresenter {
 				else
 				{
 					$sysPatternId = $this->sysPatternFacadeFactory->create()
-						->getId($formValues->sysPatternTeamSelect, $formValues->sysPatternShiftSelect);
+						->getId($formValues->sysPatternShiftSelect, $formValues->sysPatternSubshiftSelect);
 					
 					$patternFacadeFactory->save($user->getId(), $sysPatternId, 0);
 				}
@@ -159,18 +163,10 @@ class SignupPresenter extends BaseaccountPresenter {
 	 */
 	public function signupFormError(Form $form)
 	{
-		$formValues = $form->getValues();
+		$formValues = $form->getValues();		
 		
-		if ($formValues->sysPatternTeamSelect === 0)
-		{
-			$addItems = [0 => 'Custom'];
-			
-			$origItems = $form['sysPatternTeamSelect']->getItems();
-			
-			$newItems = $addItems + $origItems;
-			
-			$form['sysPatternTeamSelect']->setItems($newItems);
-		}
+//		\Nette\Diagnostics\Debugger::dump($formValues);
+//		exit;
 		
 		if ($formValues->sysPatternShiftSelect === 0)
 		{
@@ -181,6 +177,21 @@ class SignupPresenter extends BaseaccountPresenter {
 			$newItems = $addItems + $origItems;
 			
 			$form['sysPatternShiftSelect']->setItems($newItems);
+		}
+		
+		if ($formValues->sysPatternSubshiftSelect === 0)
+		{			
+			$form['sysPatternSubshiftSelect']->setItems(array());
+		}
+		else
+		{
+			$shiftId = (int) $formValues->sysPatternShiftSelect;
+			
+//			$shiftId = "1 OR 1";
+			
+			$sysPatternSubshiftSelection = $this->subshiftFacadeFactory->create()->getFormSelection($shiftId);
+			
+			$form['sysPatternSubshiftSelect']->setItems($sysPatternSubshiftSelection);
 		}
 	}
 

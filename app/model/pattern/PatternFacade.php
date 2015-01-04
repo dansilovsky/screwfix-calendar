@@ -50,9 +50,9 @@ class PatternFacade extends RepositoryFacade {
 		
 		if ($customPatternRow !== null)
 		{
-			$jsonPattern = unserialize($customPatternRow->pattern)->toJson();
+			$patternArr = unserialize($customPatternRow->pattern)->getArray();
 
-			return ['0:0' => $jsonPattern];
+			return ['0:0' => $patternArr];
 		}
 		
 		return null;
@@ -84,8 +84,8 @@ class PatternFacade extends RepositoryFacade {
 	{
 		$data = array(
 			'user_id' => $userId, 
-			'sys_pattern_id' => $sysPatternId,
-			'custom_pattern_id' => $customPatternId
+			'sys_pattern_id' => $sysPatternId == 0 ? null : $sysPatternId,
+			'custom_pattern_id' => $customPatternId == 0 ? null : $customPatternId
 		);
 		
 		return $this->repository->insert($data);
@@ -94,8 +94,8 @@ class PatternFacade extends RepositoryFacade {
 	public function update($userId, $sysPatternId, $customPatternId)
 	{
 		$data = array(			
-			'sys_pattern_id' => $sysPatternId,
-			'custom_pattern_id' => $customPatternId
+			'sys_pattern_id' => $sysPatternId == 0 ? null : $sysPatternId,
+			'custom_pattern_id' => $customPatternId == 0 ? null : $customPatternId
 		);
 		
 		$this->repository->findByUserId($userId)->update($data);
