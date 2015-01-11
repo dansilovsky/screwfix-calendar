@@ -323,7 +323,7 @@ class AccountPresenter extends BaseaccountPresenter {
 			
 			$this->patternFacadeFactory->create()->update($userId, $sysPatternId, $customPatternId);
 			
-			$this->flashMessage('Your changes have been successfully saved.');
+			$this->successfullFlashMessage();
 		}
 		catch (\Exception $ex)
 		{

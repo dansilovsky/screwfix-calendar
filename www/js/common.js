@@ -431,6 +431,24 @@
 	
 }).call(this, jQuery);
 
+//messages app
+(function($) {
+	var MessageBarView = Backbone.View.extend({
+		el: $('#messagesBar'),
+		
+		initialize: function() {
+			this.$close = this.$el.find('.buttonClose');
+			
+			this.$close.click(function clHideMessageBar(){
+				var smaz = $(this).closest('.messagesBlock').slideUp();
+				smaz;
+			});
+		}
+	});
+	
+	var message = new MessageBarView();
+}(jQuery));
+
 // TODO: smaz to
 Screwfix.testCounter = 0;
 

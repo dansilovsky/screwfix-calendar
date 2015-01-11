@@ -46,6 +46,8 @@ $color-table-edge: $color-grey;
 $color-table-today: $color-grey-dark;
 $color-box-border: rgb(0, 0, 0);
 
+$color-succes: rgb(0, 153, 0);
+
 /* padding */
 $padding-main: 15px;
 $padding-text: 8px;
@@ -77,3 +79,5 @@ $margin-text: $padding-text;
 @import "partials/_layover";
 @import "partials/_boxes";
 @import "partials/_highlight";
+
+@import "partials/_messages"

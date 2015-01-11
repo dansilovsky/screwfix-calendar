@@ -12,6 +12,17 @@
 		{if $isStickyFooter}
 		<div id="root">
 		{/if}
+			<div n:if="($flashes || isset($messages)) && $presenter->name !== 'Front:Account'"  id="messagesBar">
+				<div class="messagesBlock">
+					<div class="buttonCloseArea">						
+						<div class="buttonClose buttonNegative">&#10005</div>
+						<p class="messagesFlashesFormsucces" n:foreach="$flashes as $flash">{if $flash->type == 'form:success'}{$flash->message}{/if}</p>
+						{if isset($messages)}
+						<p class="messagesMessage" n:foreach="$messages as $message">{$message['message']}</p>
+						{/if}
+					</div>
+				</div>
+			</div>
 			<div id="mainBar" class="highlight">
 				<nav>
 					<ul>

@@ -2,7 +2,9 @@
 
 {block contentSidebar}
 
-<p n:foreach="$flashes as $flash">{if $flash->type == 'form:success'}{$flash->message}{/if}</p>
+<div n:if="$flashes" class="messagesBlock">	
+	<p class="messagesFlashesFormsucces" n:foreach="$flashes as $flash">{if $flash->type == 'form:success'}{$flash->message}{/if}</p>
+</div>
 {include #contentAccount}
 
 {define #sidebarMenu}

@@ -21,6 +21,22 @@
 	}
 }
 
+.buttonClose {
+	border: 1px solid $color-text-highlight-light;
+	cursor: pointer;
+	float: right;
+	font-size: $base-font-size;
+	height: $base-font-size;
+	line-height: $base-font-size;
+	text-align: center;
+	width: $base-font-size;	
+	@include border-radius(50%);
+}
+
+.buttonCloseArea {
+	position: relative;
+}
+
 .buttonNegative {
 	background-color: $color-grey-darker;
 	color: $color-text-highlight-light;

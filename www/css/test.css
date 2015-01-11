@@ -394,11 +394,33 @@ textarea {
 }
 
 /* line 24, ../../app/sass/sass/partials/_buttons.scss */
+.buttonClose {
+  border: 1px solid #282828;
+  cursor: pointer;
+  float: right;
+  font-size: 14px;
+  height: 14px;
+  line-height: 14px;
+  text-align: center;
+  width: 14px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+  border-radius: 50%;
+}
+
+/* line 36, ../../app/sass/sass/partials/_buttons.scss */
+.buttonCloseArea {
+  position: relative;
+}
+
+/* line 40, ../../app/sass/sass/partials/_buttons.scss */
 .buttonNegative {
   background-color: #d7d7d7;
   color: #282828;
 }
-/* line 28, ../../app/sass/sass/partials/_buttons.scss */
+/* line 44, ../../app/sass/sass/partials/_buttons.scss */
 .buttonNegative:hover {
   background-color: #e4e4e4;
 }
@@ -451,6 +473,16 @@ textarea {
 .highlight {
   background-color: #3074b6;
   color: white;
+}
+
+/* line 1, ../../app/sass/sass/partials/_messages.scss */
+.messagesBlock {
+  padding: 0.71429em 1.07143em 0.71429em 1.07143em;
+}
+
+/* line 5, ../../app/sass/sass/partials/_messages.scss */
+.messagesMessage {
+  font-weight: bold;
 }
 
 /* 

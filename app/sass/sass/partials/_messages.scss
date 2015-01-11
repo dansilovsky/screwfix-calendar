@@ -1,0 +1,7 @@
+.messagesBlock {
+	padding: px-to-em($base-line-height/2, $base-font-size) px-to-em($padding-main, $base-font-size) px-to-em($base-line-height/2, $base-font-size) px-to-em($padding-main, $base-font-size);
+}
+
+.messagesMessage {
+	font-weight: bold;
+}
